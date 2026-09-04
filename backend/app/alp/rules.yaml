@@ -1,0 +1,68 @@
+grouping:
+  threshold: 0.67
+  episode_max_span_days: 180
+  weights:
+    semantic: 0.35
+    asset: 0.30
+    temporal: 0.15
+    issue: 0.20
+
+confidence:
+  weights:
+    semantic_consistency: 0.25
+    asset_consistency: 0.20
+    temporal_consistency: 0.15
+    evidence_strength: 0.20
+    issue_agreement: 0.20
+
+issues:
+  water_leak:
+    label: Water leak
+    interpretation: Evidence indicates a recurring leak episode on the same infrastructure asset.
+    possible_cause: Connection, seal, or service-line degradation may be contributing to repeated leakage.
+    action: Inspect joints, seals, and the connected service line; prioritize a pressure/leak test before failure.
+  main_break:
+    label: Water main break
+    interpretation: The sequence is consistent with a water-main failure episode requiring follow-up.
+    possible_cause: Pipe-wall deterioration or external loading may be contributing; the evidence does not distinguish them.
+    action: Review break history and pipe attributes, then schedule condition assessment of the adjacent main segment.
+  low_pressure:
+    label: Low water pressure
+    interpretation: Evidence indicates a recurring pressure issue rather than isolated service requests.
+    possible_cause: Valve or service-line degradation may be contributing to recurring pressure complaints.
+    action: Schedule pressure testing and inspection of the associated valve and service line.
+  sewer_backup:
+    label: Sewer backup
+    interpretation: The work-order sequence indicates recurring loss of collection-line capacity.
+    possible_cause: Root intrusion, debris, or pipe deformation may be contributing; camera evidence is needed.
+    action: Schedule CCTV inspection and targeted cleaning; compare findings with the prior blockage location.
+  pothole:
+    label: Pothole recurrence
+    interpretation: The defect returned after prior surface treatment, indicating repeat pavement failure.
+    possible_cause: Water infiltration or base failure may be contributing to patch failure.
+    action: Inspect drainage and pavement base before selecting a durable full-depth repair.
+  pavement_damage:
+    label: Pavement damage
+    interpretation: Related pavement observations show progression or recurrence on the same segment.
+    possible_cause: Subgrade, drainage, or loading conditions may be contributing; available notes are inconclusive.
+    action: Perform condition survey and core sampling before selecting rehabilitation treatment.
+  meter_failure:
+    label: Meter failure
+    interpretation: Repeated read exceptions indicate an intermittent or recurring meter-system fault.
+    possible_cause: Register or endpoint degradation may be contributing to repeated read failures.
+    action: Compare register and endpoint diagnostics; replace only the component confirmed by field testing.
+  hvac_failure:
+    label: HVAC failure
+    interpretation: The building equipment shows a recurring loss-of-service pattern.
+    possible_cause: Control, actuator, or compressor degradation may be contributing; evidence is not conclusive.
+    action: Trend temperatures and controls, then inspect the repeatedly implicated subsystem before peak load.
+  electrical_issue:
+    label: Electrical fault
+    interpretation: Repeat outages indicate an electrical episode that warrants load and component inspection.
+    possible_cause: A breaker, contactor, or downstream load may be contributing; the current evidence is limited.
+    action: Perform load testing and thermal inspection of the affected circuit and protective devices.
+  unknown:
+    label: Unclassified maintenance pattern
+    interpretation: Related work orders were found, but the issue family is not reliably classified.
+    possible_cause: Insufficient evidence to determine cause.
+    action: Review source notes and assign an issue family before scheduling preventive work.
