@@ -1,0 +1,445 @@
+CommentId,WorkOrderId,CreatedDate,Comment,CommentType
+C-50001,WO-10001,2022-01-11T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50002,WO-10001,2022-01-11T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50003,WO-10002,2022-01-23T03:00:00+00:00,Crew checked service line; pressure remains below expected range. Contact Jordan Rivera at 303-555-0182; employee ID EMP-48291.,technician
+C-50004,WO-10002,2022-01-23T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50005,WO-10003,2022-02-28T03:00:00+00:00,Pressure issue returned after previous visit. Technician observed a corroded valve stem contributing to restricted flow.,technician
+C-50006,WO-10003,2022-02-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50007,WO-10004,2022-04-24T03:00:00+00:00,Replaced worn valve stem and restored normal pressure.,technician
+C-50008,WO-10004,2022-04-24T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50009,WO-10005,2022-01-18T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50010,WO-10005,2022-01-18T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50011,WO-10006,2022-01-30T03:00:00+00:00,Crew isolated service and found continued seepage.,technician
+C-50012,WO-10006,2022-01-30T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50013,WO-10007,2022-03-07T03:00:00+00:00,Leak returned at the same connection.,technician
+C-50014,WO-10007,2022-03-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50015,WO-10008,2022-05-01T03:00:00+00:00,Replaced flange gasket; no additional leakage observed.,technician
+C-50016,WO-10008,2022-05-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50017,WO-10009,2022-02-02T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50018,WO-10009,2022-02-02T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50019,WO-10010,2022-02-14T03:00:00+00:00,Crew exposed a longitudinal break in the water main.,technician
+C-50020,WO-10010,2022-02-14T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50021,WO-10011,2022-03-22T03:00:00+00:00,Temporary clamp is holding; monitor for renewed leakage.,technician
+C-50022,WO-10011,2022-03-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50023,WO-10012,2022-05-16T03:00:00+00:00,Installed permanent repair sleeve and returned main to service.,technician
+C-50024,WO-10012,2022-05-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50025,WO-10013,2022-03-01T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50026,WO-10013,2022-03-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50027,WO-10014,2022-03-13T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50028,WO-10014,2022-03-13T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50029,WO-10015,2022-04-18T03:00:00+00:00,Backup recurred after prior cleaning. Camera inspection documented root intrusion at joint 14.,technician
+C-50030,WO-10015,2022-04-18T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50031,WO-10016,2022-06-12T03:00:00+00:00,Camera inspection documented root intrusion at joint 14.,technician
+C-50032,WO-10016,2022-06-12T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50033,WO-10017,2022-03-10T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50034,WO-10017,2022-03-10T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50035,WO-10018,2022-03-22T03:00:00+00:00,Crew placed cold patch and reopened lane.,technician
+C-50036,WO-10018,2022-03-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50037,WO-10019,2022-04-27T03:00:00+00:00,Patch failed and pothole returned after rainfall.,technician
+C-50038,WO-10019,2022-04-27T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50039,WO-10020,2022-06-21T03:00:00+00:00,Removed failed material and installed compacted hot-mix patch.,technician
+C-50040,WO-10020,2022-06-21T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50041,WO-10021,2022-03-25T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50042,WO-10021,2022-03-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50043,WO-10022,2022-04-06T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50044,WO-10022,2022-04-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50045,WO-10023,2022-05-12T03:00:00+00:00,Surface damage expanded beyond prior treatment area.,technician
+C-50046,WO-10023,2022-05-12T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50047,WO-10024,2022-07-06T03:00:00+00:00,Scheduled core sampling before selecting rehabilitation treatment.,technician
+C-50048,WO-10024,2022-07-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50049,WO-10025,2022-04-10T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50050,WO-10025,2022-04-10T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50051,WO-10026,2022-04-22T03:00:00+00:00,Technician reset endpoint; intermittent readings continued.,technician
+C-50052,WO-10026,2022-04-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50053,WO-10027,2022-05-28T03:00:00+00:00,Meter failed again during remote read cycle. Technician confirmed a failed meter register.,technician
+C-50054,WO-10027,2022-05-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50055,WO-10028,2022-07-22T03:00:00+00:00,Replaced failed register and verified three consecutive reads.,technician
+C-50056,WO-10028,2022-07-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50057,WO-10029,2022-04-25T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50058,WO-10029,2022-04-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50059,WO-10030,2022-05-07T03:00:00+00:00,Reset controller; supply air temperature remained unstable.,technician
+C-50060,WO-10030,2022-05-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50061,WO-10031,2022-06-12T03:00:00+00:00,Cooling issue returned during afternoon load.,technician
+C-50062,WO-10031,2022-06-12T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50063,WO-10032,2022-08-06T03:00:00+00:00,Replaced failed actuator and verified damper travel.,technician
+C-50064,WO-10032,2022-08-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50065,WO-10033,2022-05-20T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50066,WO-10033,2022-05-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50067,WO-10034,2022-06-01T03:00:00+00:00,Breaker reset; circuit current was within rated range.,technician
+C-50068,WO-10034,2022-06-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50069,WO-10035,2022-07-07T03:00:00+00:00,Circuit tripped again under evening load.,technician
+C-50070,WO-10035,2022-07-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50071,WO-10036,2022-08-31T03:00:00+00:00,Replaced damaged contactor and verified normal operation.,technician
+C-50072,WO-10036,2022-08-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50073,WO-10037,2022-05-26T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50074,WO-10037,2022-05-26T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50075,WO-10038,2022-06-07T03:00:00+00:00,Crew checked service line; pressure remains below expected range.,technician
+C-50076,WO-10038,2022-06-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50077,WO-10039,2022-07-13T03:00:00+00:00,Pressure issue returned after previous visit. Technician observed a corroded valve stem contributing to restricted flow.,technician
+C-50078,WO-10039,2022-07-13T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50079,WO-10040,2022-09-06T03:00:00+00:00,Replaced worn valve stem and restored normal pressure.,technician
+C-50080,WO-10040,2022-09-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50081,WO-10041,2022-06-20T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50082,WO-10041,2022-06-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50083,WO-10042,2022-07-02T03:00:00+00:00,Crew isolated service and found continued seepage.,technician
+C-50084,WO-10042,2022-07-02T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50085,WO-10043,2022-08-07T03:00:00+00:00,Leak returned at the same connection.,technician
+C-50086,WO-10043,2022-08-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50087,WO-10044,2022-10-01T03:00:00+00:00,Replaced flange gasket; no additional leakage observed.,technician
+C-50088,WO-10044,2022-10-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50089,WO-10045,2022-07-07T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50090,WO-10045,2022-07-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50091,WO-10046,2022-07-19T03:00:00+00:00,Crew exposed a longitudinal break in the water main. Contact Jordan Rivera at 303-555-0182; employee ID EMP-48291.,technician
+C-50092,WO-10046,2022-07-19T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50093,WO-10047,2022-08-24T03:00:00+00:00,Temporary clamp is holding; monitor for renewed leakage.,technician
+C-50094,WO-10047,2022-08-24T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50095,WO-10048,2022-10-18T03:00:00+00:00,Installed permanent repair sleeve and returned main to service.,technician
+C-50096,WO-10048,2022-10-18T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50097,WO-10049,2022-07-20T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50098,WO-10049,2022-07-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50099,WO-10050,2022-08-01T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50100,WO-10050,2022-08-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50101,WO-10051,2022-09-06T03:00:00+00:00,Backup recurred after prior cleaning. Camera inspection documented root intrusion at joint 14.,technician
+C-50102,WO-10051,2022-09-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50103,WO-10052,2022-10-31T03:00:00+00:00,Camera inspection documented root intrusion at joint 14.,technician
+C-50104,WO-10052,2022-10-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50105,WO-10053,2022-07-29T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50106,WO-10053,2022-07-29T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50107,WO-10054,2022-08-10T03:00:00+00:00,Crew placed cold patch and reopened lane.,technician
+C-50108,WO-10054,2022-08-10T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50109,WO-10055,2022-09-15T03:00:00+00:00,Patch failed and pothole returned after rainfall.,technician
+C-50110,WO-10055,2022-09-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50111,WO-10056,2022-11-09T03:00:00+00:00,Removed failed material and installed compacted hot-mix patch.,technician
+C-50112,WO-10056,2022-11-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50113,WO-10057,2022-08-22T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50114,WO-10057,2022-08-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50115,WO-10058,2022-09-03T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50116,WO-10058,2022-09-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50117,WO-10059,2022-10-09T03:00:00+00:00,Surface damage expanded beyond prior treatment area.,technician
+C-50118,WO-10059,2022-10-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50119,WO-10060,2022-12-03T03:00:00+00:00,Scheduled core sampling before selecting rehabilitation treatment.,technician
+C-50120,WO-10060,2022-12-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50121,WO-10061,2022-09-04T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50122,WO-10061,2022-09-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50123,WO-10062,2022-09-16T03:00:00+00:00,Technician reset endpoint; intermittent readings continued.,technician
+C-50124,WO-10062,2022-09-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50125,WO-10063,2022-10-22T03:00:00+00:00,Meter failed again during remote read cycle. Technician confirmed a failed meter register.,technician
+C-50126,WO-10063,2022-10-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50127,WO-10064,2022-12-16T03:00:00+00:00,Replaced failed register and verified three consecutive reads.,technician
+C-50128,WO-10064,2022-12-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50129,WO-10065,2022-09-14T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50130,WO-10065,2022-09-14T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50131,WO-10066,2022-09-26T03:00:00+00:00,Reset controller; supply air temperature remained unstable.,technician
+C-50132,WO-10066,2022-09-26T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50133,WO-10067,2022-11-01T03:00:00+00:00,Cooling issue returned during afternoon load.,technician
+C-50134,WO-10067,2022-11-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50135,WO-10068,2022-12-26T03:00:00+00:00,Replaced failed actuator and verified damper travel.,technician
+C-50136,WO-10068,2022-12-26T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50137,WO-10069,2022-09-30T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50138,WO-10069,2022-09-30T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50139,WO-10070,2022-10-12T03:00:00+00:00,Breaker reset; circuit current was within rated range.,technician
+C-50140,WO-10070,2022-10-12T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50141,WO-10071,2022-11-17T03:00:00+00:00,Circuit tripped again under evening load.,technician
+C-50142,WO-10071,2022-11-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50143,WO-10072,2023-01-11T03:00:00+00:00,Replaced damaged contactor and verified normal operation.,technician
+C-50144,WO-10072,2023-01-11T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50145,WO-10073,2022-10-17T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50146,WO-10073,2022-10-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50147,WO-10074,2022-10-29T03:00:00+00:00,Crew checked service line; pressure remains below expected range.,technician
+C-50148,WO-10074,2022-10-29T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50149,WO-10075,2022-12-04T03:00:00+00:00,Pressure issue returned after previous visit. Technician observed a corroded valve stem contributing to restricted flow.,technician
+C-50150,WO-10075,2022-12-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50151,WO-10076,2023-01-28T03:00:00+00:00,Replaced worn valve stem and restored normal pressure.,technician
+C-50152,WO-10076,2023-01-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50153,WO-10077,2022-11-04T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50154,WO-10077,2022-11-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50155,WO-10078,2022-11-16T03:00:00+00:00,Crew isolated service and found continued seepage.,technician
+C-50156,WO-10078,2022-11-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50157,WO-10079,2022-12-22T03:00:00+00:00,Leak returned at the same connection.,technician
+C-50158,WO-10079,2022-12-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50159,WO-10080,2023-02-15T03:00:00+00:00,Replaced flange gasket; no additional leakage observed.,technician
+C-50160,WO-10080,2023-02-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50161,WO-10081,2022-11-20T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50162,WO-10081,2022-11-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50163,WO-10082,2022-12-02T03:00:00+00:00,Crew exposed a longitudinal break in the water main.,technician
+C-50164,WO-10082,2022-12-02T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50165,WO-10083,2023-01-07T03:00:00+00:00,Temporary clamp is holding; monitor for renewed leakage.,technician
+C-50166,WO-10083,2023-01-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50167,WO-10084,2023-03-03T03:00:00+00:00,Installed permanent repair sleeve and returned main to service.,technician
+C-50168,WO-10084,2023-03-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50169,WO-10085,2022-12-11T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50170,WO-10085,2022-12-11T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50171,WO-10086,2022-12-23T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50172,WO-10086,2022-12-23T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50173,WO-10087,2023-01-28T03:00:00+00:00,Backup recurred after prior cleaning. Camera inspection documented root intrusion at joint 14.,technician
+C-50174,WO-10087,2023-01-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50175,WO-10088,2023-03-24T03:00:00+00:00,Camera inspection documented root intrusion at joint 14.,technician
+C-50176,WO-10088,2023-03-24T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50177,WO-10089,2022-12-28T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50178,WO-10089,2022-12-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50179,WO-10090,2023-01-09T03:00:00+00:00,Crew placed cold patch and reopened lane. Contact Jordan Rivera at 303-555-0182; employee ID EMP-48291.,technician
+C-50180,WO-10090,2023-01-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50181,WO-10091,2023-02-14T03:00:00+00:00,Patch failed and pothole returned after rainfall.,technician
+C-50182,WO-10091,2023-02-14T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50183,WO-10092,2023-04-10T03:00:00+00:00,Removed failed material and installed compacted hot-mix patch.,technician
+C-50184,WO-10092,2023-04-10T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50185,WO-10093,2023-01-04T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50186,WO-10093,2023-01-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50187,WO-10094,2023-01-16T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50188,WO-10094,2023-01-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50189,WO-10095,2023-02-21T03:00:00+00:00,Surface damage expanded beyond prior treatment area.,technician
+C-50190,WO-10095,2023-02-21T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50191,WO-10096,2023-04-17T03:00:00+00:00,Scheduled core sampling before selecting rehabilitation treatment.,technician
+C-50192,WO-10096,2023-04-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50193,WO-10097,2023-01-28T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50194,WO-10097,2023-01-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50195,WO-10098,2023-02-09T03:00:00+00:00,Technician reset endpoint; intermittent readings continued.,technician
+C-50196,WO-10098,2023-02-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50197,WO-10099,2023-03-17T03:00:00+00:00,Meter failed again during remote read cycle. Technician confirmed a failed meter register.,technician
+C-50198,WO-10099,2023-03-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50199,WO-10100,2023-05-11T03:00:00+00:00,Replaced failed register and verified three consecutive reads.,technician
+C-50200,WO-10100,2023-05-11T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50201,WO-10101,2023-02-08T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50202,WO-10101,2023-02-08T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50203,WO-10102,2023-02-20T03:00:00+00:00,Reset controller; supply air temperature remained unstable.,technician
+C-50204,WO-10102,2023-02-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50205,WO-10103,2023-03-28T03:00:00+00:00,Cooling issue returned during afternoon load.,technician
+C-50206,WO-10103,2023-03-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50207,WO-10104,2023-05-22T03:00:00+00:00,Replaced failed actuator and verified damper travel.,technician
+C-50208,WO-10104,2023-05-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50209,WO-10105,2023-03-04T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50210,WO-10105,2023-03-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50211,WO-10106,2023-03-16T03:00:00+00:00,Breaker reset; circuit current was within rated range.,technician
+C-50212,WO-10106,2023-03-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50213,WO-10107,2023-04-21T03:00:00+00:00,Circuit tripped again under evening load.,technician
+C-50214,WO-10107,2023-04-21T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50215,WO-10108,2023-06-15T03:00:00+00:00,Replaced damaged contactor and verified normal operation.,technician
+C-50216,WO-10108,2023-06-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50217,WO-10109,2023-03-19T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50218,WO-10109,2023-03-19T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50219,WO-10110,2023-03-31T03:00:00+00:00,Crew checked service line; pressure remains below expected range.,technician
+C-50220,WO-10110,2023-03-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50221,WO-10111,2023-05-06T03:00:00+00:00,Pressure issue returned after previous visit. Technician observed a corroded valve stem contributing to restricted flow.,technician
+C-50222,WO-10111,2023-05-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50223,WO-10112,2023-06-30T03:00:00+00:00,Replaced worn valve stem and restored normal pressure.,technician
+C-50224,WO-10112,2023-06-30T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50225,WO-10113,2023-04-05T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50226,WO-10113,2023-04-05T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50227,WO-10114,2023-04-17T03:00:00+00:00,Crew isolated service and found continued seepage.,technician
+C-50228,WO-10114,2023-04-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50229,WO-10115,2023-05-23T03:00:00+00:00,Leak returned at the same connection.,technician
+C-50230,WO-10115,2023-05-23T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50231,WO-10116,2023-07-17T03:00:00+00:00,Replaced flange gasket; no additional leakage observed.,technician
+C-50232,WO-10116,2023-07-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50233,WO-10117,2023-04-18T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50234,WO-10117,2023-04-18T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50235,WO-10118,2023-04-30T03:00:00+00:00,Crew exposed a longitudinal break in the water main.,technician
+C-50236,WO-10118,2023-04-30T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50237,WO-10119,2023-06-05T03:00:00+00:00,Temporary clamp is holding; monitor for renewed leakage.,technician
+C-50238,WO-10119,2023-06-05T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50239,WO-10120,2023-07-30T03:00:00+00:00,Installed permanent repair sleeve and returned main to service.,technician
+C-50240,WO-10120,2023-07-30T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50241,WO-10121,2023-05-02T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50242,WO-10121,2023-05-02T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50243,WO-10122,2023-05-14T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50244,WO-10122,2023-05-14T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50245,WO-10123,2023-06-19T03:00:00+00:00,Backup recurred after prior cleaning. Camera inspection documented root intrusion at joint 14.,technician
+C-50246,WO-10123,2023-06-19T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50247,WO-10124,2023-08-13T03:00:00+00:00,Camera inspection documented root intrusion at joint 14.,technician
+C-50248,WO-10124,2023-08-13T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50249,WO-10125,2023-05-15T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50250,WO-10125,2023-05-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50251,WO-10126,2023-05-27T03:00:00+00:00,Crew placed cold patch and reopened lane.,technician
+C-50252,WO-10126,2023-05-27T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50253,WO-10127,2023-07-02T03:00:00+00:00,Patch failed and pothole returned after rainfall.,technician
+C-50254,WO-10127,2023-07-02T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50255,WO-10128,2023-08-26T03:00:00+00:00,Removed failed material and installed compacted hot-mix patch.,technician
+C-50256,WO-10128,2023-08-26T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50257,WO-10129,2023-06-04T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50258,WO-10129,2023-06-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50259,WO-10130,2023-06-16T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50260,WO-10130,2023-06-16T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50261,WO-10131,2023-07-22T03:00:00+00:00,Surface damage expanded beyond prior treatment area.,technician
+C-50262,WO-10131,2023-07-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50263,WO-10132,2023-09-15T03:00:00+00:00,Scheduled core sampling before selecting rehabilitation treatment.,technician
+C-50264,WO-10132,2023-09-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50265,WO-10133,2023-06-22T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50266,WO-10133,2023-06-22T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50267,WO-10134,2023-07-04T03:00:00+00:00,Technician reset endpoint; intermittent readings continued. Contact Jordan Rivera at 303-555-0182; employee ID EMP-48291.,technician
+C-50268,WO-10134,2023-07-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50269,WO-10135,2023-08-09T03:00:00+00:00,Meter failed again during remote read cycle. Technician confirmed a failed meter register.,technician
+C-50270,WO-10135,2023-08-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50271,WO-10136,2023-10-03T03:00:00+00:00,Replaced failed register and verified three consecutive reads.,technician
+C-50272,WO-10136,2023-10-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50273,WO-10137,2023-07-03T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50274,WO-10137,2023-07-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50275,WO-10138,2023-07-15T03:00:00+00:00,Reset controller; supply air temperature remained unstable.,technician
+C-50276,WO-10138,2023-07-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50277,WO-10139,2023-08-20T03:00:00+00:00,Cooling issue returned during afternoon load.,technician
+C-50278,WO-10139,2023-08-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50279,WO-10140,2023-10-14T03:00:00+00:00,Replaced failed actuator and verified damper travel.,technician
+C-50280,WO-10140,2023-10-14T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50281,WO-10141,2023-07-27T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50282,WO-10141,2023-07-27T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50283,WO-10142,2023-08-08T03:00:00+00:00,Breaker reset; circuit current was within rated range.,technician
+C-50284,WO-10142,2023-08-08T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50285,WO-10143,2023-09-13T03:00:00+00:00,Circuit tripped again under evening load.,technician
+C-50286,WO-10143,2023-09-13T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50287,WO-10144,2023-11-07T03:00:00+00:00,Replaced damaged contactor and verified normal operation.,technician
+C-50288,WO-10144,2023-11-07T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50289,WO-10145,2023-07-31T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50290,WO-10145,2023-07-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50291,WO-10146,2023-08-12T03:00:00+00:00,Crew checked service line; pressure remains below expected range.,technician
+C-50292,WO-10146,2023-08-12T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50293,WO-10147,2023-09-17T03:00:00+00:00,Pressure issue returned after previous visit. Technician observed a corroded valve stem contributing to restricted flow.,technician
+C-50294,WO-10147,2023-09-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50295,WO-10148,2023-11-11T03:00:00+00:00,Replaced worn valve stem and restored normal pressure.,technician
+C-50296,WO-10148,2023-11-11T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50297,WO-10149,2023-08-28T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50298,WO-10149,2023-08-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50299,WO-10150,2023-09-09T03:00:00+00:00,Crew isolated service and found continued seepage.,technician
+C-50300,WO-10150,2023-09-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50301,WO-10151,2023-10-15T03:00:00+00:00,Leak returned at the same connection.,technician
+C-50302,WO-10151,2023-10-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50303,WO-10152,2023-12-09T03:00:00+00:00,Replaced flange gasket; no additional leakage observed.,technician
+C-50304,WO-10152,2023-12-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50305,WO-10153,2023-09-13T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50306,WO-10153,2023-09-13T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50307,WO-10154,2023-09-25T03:00:00+00:00,Crew exposed a longitudinal break in the water main.,technician
+C-50308,WO-10154,2023-09-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50309,WO-10155,2023-10-31T03:00:00+00:00,Temporary clamp is holding; monitor for renewed leakage.,technician
+C-50310,WO-10155,2023-10-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50311,WO-10156,2023-12-25T03:00:00+00:00,Installed permanent repair sleeve and returned main to service.,technician
+C-50312,WO-10156,2023-12-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50313,WO-10157,2023-09-19T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50314,WO-10157,2023-09-19T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50315,WO-10158,2023-10-01T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50316,WO-10158,2023-10-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50317,WO-10159,2023-11-06T03:00:00+00:00,Backup recurred after prior cleaning. Camera inspection documented root intrusion at joint 14.,technician
+C-50318,WO-10159,2023-11-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50319,WO-10160,2023-12-31T03:00:00+00:00,Camera inspection documented root intrusion at joint 14.,technician
+C-50320,WO-10160,2023-12-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50321,WO-10161,2023-10-14T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50322,WO-10161,2023-10-14T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50323,WO-10162,2023-10-26T03:00:00+00:00,Crew placed cold patch and reopened lane.,technician
+C-50324,WO-10162,2023-10-26T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50325,WO-10163,2023-12-01T03:00:00+00:00,Patch failed and pothole returned after rainfall.,technician
+C-50326,WO-10163,2023-12-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50327,WO-10164,2024-01-25T03:00:00+00:00,Removed failed material and installed compacted hot-mix patch.,technician
+C-50328,WO-10164,2024-01-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50329,WO-10165,2023-10-25T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50330,WO-10165,2023-10-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50331,WO-10166,2023-11-06T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50332,WO-10166,2023-11-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50333,WO-10167,2023-12-12T03:00:00+00:00,Surface damage expanded beyond prior treatment area.,technician
+C-50334,WO-10167,2023-12-12T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50335,WO-10168,2024-02-05T03:00:00+00:00,Scheduled core sampling before selecting rehabilitation treatment.,technician
+C-50336,WO-10168,2024-02-05T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50337,WO-10169,2023-11-09T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50338,WO-10169,2023-11-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50339,WO-10170,2023-11-21T03:00:00+00:00,Technician reset endpoint; intermittent readings continued.,technician
+C-50340,WO-10170,2023-11-21T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50341,WO-10171,2023-12-27T03:00:00+00:00,Meter failed again during remote read cycle. Technician confirmed a failed meter register.,technician
+C-50342,WO-10171,2023-12-27T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50343,WO-10172,2024-02-20T03:00:00+00:00,Replaced failed register and verified three consecutive reads.,technician
+C-50344,WO-10172,2024-02-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50345,WO-10173,2023-11-24T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50346,WO-10173,2023-11-24T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50347,WO-10174,2023-12-06T03:00:00+00:00,Reset controller; supply air temperature remained unstable.,technician
+C-50348,WO-10174,2023-12-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50349,WO-10175,2024-01-11T03:00:00+00:00,Cooling issue returned during afternoon load.,technician
+C-50350,WO-10175,2024-01-11T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50351,WO-10176,2024-03-06T03:00:00+00:00,Replaced failed actuator and verified damper travel.,technician
+C-50352,WO-10176,2024-03-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50353,WO-10177,2023-12-08T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50354,WO-10177,2023-12-08T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50355,WO-10178,2023-12-20T03:00:00+00:00,Breaker reset; circuit current was within rated range. Contact Jordan Rivera at 303-555-0182; employee ID EMP-48291.,technician
+C-50356,WO-10178,2023-12-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50357,WO-10179,2024-01-25T03:00:00+00:00,Circuit tripped again under evening load.,technician
+C-50358,WO-10179,2024-01-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50359,WO-10180,2024-03-20T03:00:00+00:00,Replaced damaged contactor and verified normal operation.,technician
+C-50360,WO-10180,2024-03-20T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50361,WO-10181,2023-12-25T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50362,WO-10181,2023-12-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50363,WO-10182,2024-01-06T03:00:00+00:00,Crew checked service line; pressure remains below expected range.,technician
+C-50364,WO-10182,2024-01-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50365,WO-10183,2024-01-19T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50366,WO-10183,2024-01-19T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50367,WO-10184,2024-01-31T03:00:00+00:00,Crew isolated service and found continued seepage.,technician
+C-50368,WO-10184,2024-01-31T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50369,WO-10185,2024-01-28T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50370,WO-10185,2024-01-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50371,WO-10186,2024-02-09T03:00:00+00:00,Crew exposed a longitudinal break in the water main.,technician
+C-50372,WO-10186,2024-02-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50373,WO-10187,2024-02-09T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50374,WO-10187,2024-02-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50375,WO-10188,2024-02-21T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50376,WO-10188,2024-02-21T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50377,WO-10189,2024-02-25T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50378,WO-10189,2024-02-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50379,WO-10190,2024-03-08T03:00:00+00:00,Crew placed cold patch and reopened lane.,technician
+C-50380,WO-10190,2024-03-08T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50381,WO-10191,2024-03-17T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50382,WO-10191,2024-03-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50383,WO-10192,2024-03-29T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50384,WO-10192,2024-03-29T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50385,WO-10193,2024-03-28T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50386,WO-10193,2024-03-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50387,WO-10194,2024-04-09T03:00:00+00:00,Technician reset endpoint; intermittent readings continued.,technician
+C-50388,WO-10194,2024-04-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50389,WO-10195,2024-04-17T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50390,WO-10195,2024-04-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50391,WO-10196,2024-04-29T03:00:00+00:00,Reset controller; supply air temperature remained unstable.,technician
+C-50392,WO-10196,2024-04-29T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50393,WO-10197,2024-05-03T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50394,WO-10197,2024-05-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50395,WO-10198,2024-05-15T03:00:00+00:00,Breaker reset; circuit current was within rated range.,technician
+C-50396,WO-10198,2024-05-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50397,WO-10199,2024-05-23T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50398,WO-10199,2024-05-23T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50399,WO-10200,2024-06-04T03:00:00+00:00,Crew checked service line; pressure remains below expected range.,technician
+C-50400,WO-10200,2024-06-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50401,WO-10201,2024-06-03T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50402,WO-10201,2024-06-03T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50403,WO-10202,2024-06-15T03:00:00+00:00,Crew isolated service and found continued seepage. Contact Jordan Rivera at 303-555-0182; employee ID EMP-48291.,technician
+C-50404,WO-10202,2024-06-15T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50405,WO-10203,2024-06-27T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50406,WO-10203,2024-06-27T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50407,WO-10204,2024-07-09T03:00:00+00:00,Crew exposed a longitudinal break in the water main.,technician
+C-50408,WO-10204,2024-07-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50409,WO-10205,2024-07-01T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50410,WO-10205,2024-07-01T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50411,WO-10206,2024-07-13T03:00:00+00:00,Crew cleared blockage and restored flow.,technician
+C-50412,WO-10206,2024-07-13T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50413,WO-10207,2024-07-28T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50414,WO-10207,2024-07-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50415,WO-10208,2024-08-09T03:00:00+00:00,Crew placed cold patch and reopened lane.,technician
+C-50416,WO-10208,2024-08-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50417,WO-10209,2024-08-09T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50418,WO-10209,2024-08-09T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50419,WO-10210,2024-08-21T03:00:00+00:00,Crack seal applied to limit water intrusion.,technician
+C-50420,WO-10210,2024-08-21T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50421,WO-10211,2024-08-26T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50422,WO-10211,2024-08-26T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50423,WO-10212,2024-09-04T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50424,WO-10212,2024-09-04T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50425,WO-10213,2024-09-25T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50426,WO-10213,2024-09-25T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50427,WO-10214,2024-10-06T03:00:00+00:00,Resident reports low pressure at service connection.,technician
+C-50428,WO-10214,2024-10-06T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50429,WO-10215,2024-10-29T03:00:00+00:00,Standing water observed near hydrant flange.,technician
+C-50430,WO-10215,2024-10-29T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50431,WO-10216,2024-11-10T03:00:00+00:00,Heavy water flow surfaced through pavement above the main.,technician
+C-50432,WO-10216,2024-11-10T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50433,WO-10217,2024-12-02T03:00:00+00:00,Sewer backup reported at upstream cleanout.,technician
+C-50434,WO-10217,2024-12-02T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50435,WO-10218,2024-12-17T03:00:00+00:00,Pothole measured in the eastbound travel lane.,technician
+C-50436,WO-10218,2024-12-17T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50437,WO-10219,2024-12-29T03:00:00+00:00,Alligator cracking observed across the wheel path.,technician
+C-50438,WO-10219,2024-12-29T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50439,WO-10220,2025-01-18T03:00:00+00:00,Meter not reading during scheduled route.,technician
+C-50440,WO-10220,2025-01-18T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50441,WO-10221,2025-01-28T03:00:00+00:00,Second floor reported no cooling from east-zone air handler.,technician
+C-50442,WO-10221,2025-01-28T00:00:00+00:00,Dispatched to crew.,dispatcher
+C-50443,WO-10222,2025-02-21T03:00:00+00:00,Lighting circuit lost power in the public corridor.,technician
+C-50444,WO-10222,2025-02-21T00:00:00+00:00,Dispatched to crew.,dispatcher
