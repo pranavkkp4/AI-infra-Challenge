@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      CIVICOPS_DATABASE_URL: duckdb:////app/state/civicops.duckdb
+      CIVICOPS_DATA_DIR: /app/data
+      CIVICOPS_DEMO_MODE: "true"
+      CIVICOPS_OPERATOR_API_KEY: ${CIVICOPS_OPERATOR_API_KEY:-}
+    volumes:
+      - civicops-data:/app/state
+      - ./data/raw:/app/data/raw:ro
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  frontend:
+    build:
+      context: frontend
+      args:
+        VITE_API_URL: /api/v1
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+
+volumes:
+  civicops-data:
