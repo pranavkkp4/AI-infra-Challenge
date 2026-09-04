@@ -4,13 +4,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "backend"))
 
-from app.config import get_settings
-from app.models.repository import SqlAlchemyRepository
-from app.pipeline import run_pipeline
 
-if __name__ == "__main__":
+def main() -> None:
+    sys.path.insert(0, str(ROOT / "backend"))
+    from app.config import get_settings
+    from app.models.repository import SqlAlchemyRepository
+    from app.pipeline import run_pipeline
+
     parser = argparse.ArgumentParser(
         description="Run the CivicOps intelligence pipeline"
     )
@@ -29,3 +30,7 @@ if __name__ == "__main__":
         prefer_transformer=args.semantic,
     )
     print(result)
+
+
+if __name__ == "__main__":
+    main()
