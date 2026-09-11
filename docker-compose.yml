@@ -6,7 +6,7 @@ services:
     environment:
       CIVICOPS_DATABASE_URL: duckdb:////app/state/civicops.duckdb
       CIVICOPS_DATA_DIR: /app/data
-      CIVICOPS_DEMO_MODE: "true"
+      CIVICOPS_DEMO_MODE: ${CIVICOPS_DEMO_MODE:-true}
       CIVICOPS_OPERATOR_API_KEY: ${CIVICOPS_OPERATOR_API_KEY:-}
     volumes:
       - civicops-data:/app/state
@@ -18,6 +18,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
+      start_period: 10m
 
   frontend:
     build:

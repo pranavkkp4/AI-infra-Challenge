@@ -55,6 +55,7 @@ describe("application integration", () => {
     expect(await screen.findByText("Infrastructure signals,")).toBeTruthy();
     expect(screen.getByRole("link", { name: /Review Queue/i })).toBeTruthy();
     expect(screen.getByText("222")).toBeTruthy();
+    expect(document.querySelector(".dataset-chip.synthetic")).toBeTruthy();
   });
 
   it("adds the session operator key to mutations", async () => {

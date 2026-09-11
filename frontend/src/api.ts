@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const API_URL = import.meta.env.VITE_API_URL ?? "/api/v1";
 const OPERATOR_KEY = "civicops-operator-key";
@@ -12,8 +12,15 @@ interface ApiState<T> {
 
 async function responseError(response: Response): Promise<string> {
   try {
-    const body = (await response.json()) as { detail?: string };
-    return body.detail ?? `Request failed with status ${response.status}`;
+    const body = (await response.json()) as { detail?: unknown };
+    if (typeof body.detail === "string") return body.detail;
+    if (Array.isArray(body.detail)) {
+      const messages = body.detail
+        .map((item) => typeof item === "object" && item && "msg" in item ? String(item.msg) : "")
+        .filter(Boolean);
+      if (messages.length) return messages.join("; ");
+    }
+    return `Request failed with status ${response.status}`;
   } catch {
     return `Request failed with status ${response.status}`;
   }
@@ -35,15 +42,21 @@ export function setOperatorKey(value: string): void {
   window.sessionStorage.setItem(OPERATOR_KEY, value);
 }
 
-export async function downloadReport(): Promise<void> {
-  const response = await fetch(`${API_URL}/reports/maintenance.md`, { headers: authHeaders() });
+export async function downloadReport(format: "md" | "json" = "md"): Promise<void> {
+  const response = await fetch(`${API_URL}/reports/maintenance.${format}`, { headers: authHeaders() });
   if (!response.ok) throw new Error(await responseError(response));
   const url = URL.createObjectURL(await response.blob());
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "PM_INSIGHT_REPORT.md";
+  anchor.download = `PM_INSIGHT_REPORT.${format}`;
+  anchor.setAttribute("aria-hidden", "true");
+  anchor.style.display = "none";
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => {
+    URL.revokeObjectURL(url);
+    anchor.remove();
+  }, 0);
 }
 
 function authHeaders(): Record<string, string> {
@@ -58,6 +71,7 @@ export function useApi<T>(path: string | null): ApiState<T> {
     error: null,
   });
   const [revision, setRevision] = useState(0);
+  const activePath = useRef<string | null>(null);
 
   useEffect(() => {
     if (!path) {
@@ -65,7 +79,13 @@ export function useApi<T>(path: string | null): ApiState<T> {
       return;
     }
     const controller = new AbortController();
-    setState((current) => ({ ...current, loading: true, error: null }));
+    const isReload = activePath.current === path;
+    activePath.current = path;
+    setState((current) => ({
+      data: isReload ? current.data : null,
+      loading: true,
+      error: null,
+    }));
     fetch(`${API_URL}${path}`, { signal: controller.signal, headers: authHeaders() })
       .then(async (response) => {
         if (!response.ok) throw new Error(await responseError(response));

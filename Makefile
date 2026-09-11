@@ -1,4 +1,4 @@
-.PHONY: install demo-data ingest test lint audit evaluate dev build
+.PHONY: install demo-data ingest test lint audit label-demo evaluate evaluate-demo dev build
 
 install:
 	python -m pip install -e "backend[dev]"
@@ -22,8 +22,14 @@ lint:
 audit:
 	python scripts/sample_audit.py
 
+label-demo: audit
+	python scripts/label_synthetic_audit.py
+
 evaluate:
 	python scripts/evaluate_audit.py
+
+evaluate-demo: label-demo
+	python scripts/evaluate_audit.py --input data/audit_sample_labeled.csv --allow-synthetic-contract-labels
 
 dev:
 	docker compose up --build

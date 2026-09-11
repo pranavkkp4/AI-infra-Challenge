@@ -71,13 +71,14 @@ export function Shell() {
       <div className="workspace">
         <div className="demo-ribbon">
           {metadata?.dataset_label.toUpperCase() ?? "DATASET CONNECTING"} <span>//</span>
-          {metadata?.demo_mode ? "TRAINING ENVIRONMENT" : "CONTROLLED OPERATIONAL DATA"}
+          {metadata ? (metadata.demo_mode ? "TRAINING ENVIRONMENT" : "CONTROLLED OPERATIONAL DATA") : "DATASET STATUS PENDING"}
           <span>//</span> NOT FIELD AUTHORIZATION
         </div>
         <header className="topbar">
           <div><small>OPERATIONS DESK / {active?.code}</small><strong>{active?.label}</strong></div>
           <div className="topbar-actions">
-            {metadata && !metadata.demo_mode && <button onClick={enterAccessKey}>Set access key</button>}
+            <span className={`dataset-chip ${metadata?.demo_mode ? "synthetic" : ""}`} title="Dataset provenance"><i />{metadata?.dataset_label ?? "Dataset connecting"}</span>
+            {metadata && !metadata.demo_mode && <button type="button" onClick={enterAccessKey}>Set access key</button>}
             <div className="topbar-meta"><span>ANALYSIS WINDOW</span><strong>{formatWindow(metadata)}</strong></div>
           </div>
         </header>
