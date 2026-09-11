@@ -1,0 +1,37 @@
+# Dark Data PM Analyst challenge - dependencies for aisa_challenge.ipynb
+#
+#   pip install -r requirements.txt
+#
+# Versions are the ones the notebook was tested against. Nothing else is needed;
+# json, os, glob and textwrap are part of the standard library.
+#
+# NOTE ON TORCH: sentence-transformers pulls in torch. By default pip may fetch
+# the CUDA build, which is several GB. The notebook runs the model on CPU, so if
+# you do not have an NVIDIA GPU install the much smaller CPU wheel first:
+#
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements.txt
+
+# data handling
+pandas>=3.0.5
+numpy>=2.5.1
+
+# embeddings (sentence-transformers supplies the all-mpnet-base-v2 model,
+# langchain-community supplies the HuggingFaceEmbeddings wrapper the notebook uses)
+sentence-transformers>=5.6.1
+langchain-community>=0.4.2
+
+# k-NN, cosine similarity, PCA
+scikit-learn>=1.9.0
+
+# the PCA scatter plot in section 3
+matplotlib>=3.11.1
+
+# reading the procedure PDFs in section 11 (imported as "fitz")
+pymupdf>=1.28.0
+
+# Gemini calls in sections 9, 10 and 11
+google-genai>=2.20.0
+
+# to run the notebook as a kernel in VS Code or Jupyter
+ipykernel>=7.3.0
