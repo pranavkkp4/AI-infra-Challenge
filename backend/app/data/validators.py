@@ -1,13 +1,26 @@
 from datetime import UTC, datetime
 
 MIN_DATE = datetime(1990, 1, 1, tzinfo=UTC)
+LOCATION_ENTITY_TYPES = {
+    "ADDRESSES",
+    "CITYFACILITIES",
+    "CITY FACILITIES",
+    "CITY DEPTS",
+    "STREETSTRAFFIC",
+    "SERVICE ZONE",
+}
+PRIMARY_RELATIONSHIP_TYPES = {"appliesto", "primary", "asset", "subject"}
+FALLBACK_RELATIONSHIP_TYPES = {"attached", "context", "related"}
 
 
-def valid_identifier(value: object) -> bool:
+def valid_identifier(value: object, *, allow_zero: bool = False) -> bool:
     if value is None:
         return False
     normalized = str(value).strip()
-    return bool(normalized and normalized.lower() not in {"null", "none", "nan", "0"})
+    invalid = {"null", "none", "nan"}
+    if not allow_zero:
+        invalid.add("0")
+    return bool(normalized and normalized.lower() not in invalid)
 
 
 def parse_timestamp(value: object) -> datetime | None:
@@ -38,8 +51,13 @@ def parse_timestamp(value: object) -> datetime | None:
 
 
 def build_asset_key(entity_type: object, entity_uid: object) -> str:
-    if not valid_identifier(entity_type) or not valid_identifier(entity_uid):
+    if not valid_identifier(entity_type) or not valid_identifier(entity_uid, allow_zero=True):
         raise ValueError("EntityType and EntityUid are both required for asset identity")
     normalized_type = "_".join(str(entity_type).strip().upper().split())
     normalized_uid = str(entity_uid).strip().upper()
     return f"{normalized_type}:{normalized_uid}"
+
+
+def classify_asset(entity_type: str) -> str:
+    normalized = " ".join(entity_type.strip().upper().replace("_", " ").split())
+    return "location" if normalized in LOCATION_ENTITY_TYPES else "equipment"

@@ -13,3 +13,11 @@ repos:
       - id: trailing-whitespace
       - id: check-added-large-files
         args: [--maxkb=10000]
+      - id: detect-private-key
+  - repo: local
+    hooks:
+      - id: check-notebook-outputs
+        name: check notebook outputs are cleared
+        entry: python scripts/check_notebook_outputs.py
+        language: system
+        files: \.ipynb$

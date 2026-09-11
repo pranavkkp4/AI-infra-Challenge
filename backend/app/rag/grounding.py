@@ -7,6 +7,9 @@ class GroundingError(ValueError):
 
 def enforce_grounding(insight: MaintenanceInsight, retrieved_work_order_ids: set[str]) -> None:
     cited = set(insight.supporting_work_orders) | set(insight.contradicting_work_orders)
+    interval = getattr(insight, "pm_interval_recommendation", None)
+    if interval is not None:
+        cited.update(interval.supporting_work_orders)
     unsupported = cited - retrieved_work_order_ids
     if unsupported:
         raise GroundingError(

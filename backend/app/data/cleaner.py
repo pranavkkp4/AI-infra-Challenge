@@ -10,10 +10,25 @@ BOILERPLATE_PATTERNS = (
 )
 SYSTEM_PREFIXES = ("system:", "auto-generated:", "workflow:")
 MEANINGLESS = {"ok", "done", "complete", "completed", "n/a", "na", "test", "none"}
+CITYWORKS_SCAFFOLD = (
+    re.compile(r"(?is)^\s*from:\s*request id:.*?\bproblem details:\s*"),
+    re.compile(r"(?im)^\s*from:\s*request id:.*$"),
+    re.compile(r"(?im)^\s*problem details:\s*"),
+    re.compile(r"(?im)^\s*problem comments:\s*"),
+)
+NON_MAINTENANCE_PATTERNS = (
+    re.compile(r"\bjanitorial suppl(?:y|ies)\b", re.I),
+    re.compile(r"\bsupply order\b", re.I),
+    re.compile(r"\b(?:attend(?:ed)?|staff) (?:a )?(?:training|meeting|conference)\b", re.I),
+    re.compile(r"\btraining (?:class|course|session)\b", re.I),
+)
 
 
 def clean_comment(text: str) -> str:
-    compact = re.sub(r"\s+", " ", (text or "").strip())
+    stripped = text or ""
+    for pattern in CITYWORKS_SCAFFOLD:
+        stripped = pattern.sub("", stripped)
+    compact = re.sub(r"\s+", " ", stripped.strip())
     if not compact or compact.lower() in MEANINGLESS:
         return ""
     if compact.lower().startswith(SYSTEM_PREFIXES):
@@ -34,6 +49,10 @@ def clean_comment(text: str) -> str:
             deduplicated.append(sentence.strip())
     result = " ".join(deduplicated)
     return result if len(re.sub(r"\W", "", result)) >= 8 else ""
+
+
+def is_maintenance_comment(text: str) -> bool:
+    return bool(text) and not any(pattern.search(text) for pattern in NON_MAINTENANCE_PATTERNS)
 
 
 def deduplicate_boilerplate(comments: list[str], frequency_threshold: float = 0.08) -> set[str]:

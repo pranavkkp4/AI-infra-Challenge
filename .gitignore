@@ -1,12 +1,21 @@
 # Private challenge data: never commit.
 data/raw/**
 !data/raw/.gitkeep
+data/WORKORDER.csv
+data/WOENTITY.csv
+data/WOCOMMENT.csv
+data/data.zip
+secrets.json
+**/secrets.json
+!secrets.example.json
+.ipynb_checkpoints/
 
 # Generated local state
 data/civicops.duckdb
 data/civicops.duckdb.wal
 data/indexes/
 data/audit_sample.csv
+data/audit_sample_labeled.csv
 data/calibration/
 data/*.db*
 data/*.sqlite*

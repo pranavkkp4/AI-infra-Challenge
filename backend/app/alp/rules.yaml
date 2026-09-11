@@ -1,5 +1,34 @@
+alp:
+  version: "1.2"
+  source: "starter corpus review plus municipal follow-up patterns"
+  evidence_contract:
+    observations: "Only state counts, dates, note signals, and cited WorkOrderIds."
+    interpretation: "Describe the episode pattern; do not present a diagnosis as fact."
+    possible_cause: "Use SUPPORTED only for direct note evidence; otherwise use POSSIBLE or UNKNOWN."
+    action: "Recommend a verification step; never authorize field work."
+  note_patterns:
+    no_problem_found:
+      triggers: ["no problem found", "no issue found", "unable to reproduce"]
+      meaning: "The visit did not reproduce the reported condition."
+      next_step: "Keep the record as a contradiction and verify whether the symptom returned."
+    jetting_or_line_cleaning:
+      triggers: ["jetting", "jetted line", "line cleaning", "cleaned line"]
+      meaning: "A cleaning intervention was recorded for a collection-line condition."
+      next_step: "Compare recurrence timing and cleaning location before increasing cadence."
+    repeat_or_still_broken:
+      triggers: ["issue returned", "still broken", "failed again", "called back"]
+      meaning: "The record describes persistence after an earlier visit or repair."
+      next_step: "Review the preceding intervention and check whether the same component recurs."
+    roots_or_grease:
+      triggers: ["roots in line", "root intrusion", "grease in line", "grease buildup"]
+      meaning: "The note names a material observed in or affecting a collection line."
+      next_step: "Use CCTV or field inspection to confirm extent before choosing treatment."
+    reconnect_action:
+      triggers: ["reconnect", "reconnection", "restore service", "turn on service"]
+      meaning: "The job concerns restoring a previously disconnected service."
+      next_step: "Verify the service state, authorization, and meter or electrical safety check."
 grouping:
-  threshold: 0.67
+  threshold: 0.60
   episode_max_span_days: 180
   weights:
     semantic: 0.35
@@ -61,6 +90,11 @@ issues:
     interpretation: Repeat outages indicate an electrical episode that warrants load and component inspection.
     possible_cause: A breaker, contactor, or downstream load may be contributing; the current evidence is limited.
     action: Perform load testing and thermal inspection of the affected circuit and protective devices.
+  reconnect:
+    label: Service reconnection
+    interpretation: The records describe a service-restoration workflow that should be checked against the prior disconnect event.
+    possible_cause: The available records show a restoration action but do not establish why service was disconnected.
+    action: Verify authorization, service state, and the meter or electrical safety check before closing the workflow.
   unknown:
     label: Unclassified maintenance pattern
     interpretation: Related work orders were found, but the issue family is not reliably classified.

@@ -1,1 +1,1 @@
-"""Measured confidence scoring and calibration support."""
+"""Deterministic confidence scoring and calibration support."""

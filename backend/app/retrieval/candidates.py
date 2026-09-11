@@ -51,18 +51,30 @@ def _add_blocked_pairs(
     by_asset: dict[str, list[CanonicalWorkOrder]] = defaultdict(list)
     by_issue: dict[IssueFamily, list[CanonicalWorkOrder]] = defaultdict(list)
     for order in orders:
-        for asset in order.asset_keys:
+        for asset in order.primary_asset_keys or order.asset_keys:
             by_asset[asset].append(order)
         if order.issue_family != IssueFamily.UNKNOWN:
             by_issue[order.issue_family].append(order)
-    for bucket in [*by_asset.values(), *by_issue.values()]:
-        sorted_bucket = sorted(bucket, key=lambda order: order.date)
-        for left_index, left in enumerate(sorted_bucket):
-            for right in sorted_bucket[left_index + 1 : left_index + 1 + blocked_neighbors]:
-                if right.date - left.date > timedelta(days=max_days):
-                    break
-                if left.work_order_id != right.work_order_id:
-                    pairs.add(tuple(sorted((left.work_order_id, right.work_order_id))))
+    for bucket in by_asset.values():
+        _add_pairs_in_window(pairs, bucket, max_days, None)
+    for bucket in by_issue.values():
+        _add_pairs_in_window(pairs, bucket, max_days, blocked_neighbors)
+
+
+def _add_pairs_in_window(
+    pairs: set[tuple[str, str]],
+    bucket: list[CanonicalWorkOrder],
+    max_days: int,
+    neighbor_limit: int | None,
+) -> None:
+    sorted_bucket = sorted(bucket, key=lambda order: order.date)
+    for left_index, left in enumerate(sorted_bucket):
+        end = None if neighbor_limit is None else left_index + 1 + neighbor_limit
+        for right in sorted_bucket[left_index + 1 : end]:
+            if right.date - left.date > timedelta(days=max_days):
+                break
+            if left.work_order_id != right.work_order_id:
+                pairs.add(tuple(sorted((left.work_order_id, right.work_order_id))))
 
 
 def _score_pair(
@@ -115,4 +127,4 @@ def _score_pair(
 
 
 def _retrieval_text(order: CanonicalWorkOrder) -> str:
-    return " ".join([order.category, order.description, *order.redacted_notes])
+    return " ".join(order.redacted_notes)

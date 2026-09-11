@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+import hashlib
+import json
 import random
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -177,6 +179,7 @@ def generate_demo_data(
     work_orders: list[dict[str, str]] = []
     entities: list[dict[str, str]] = []
     comments: list[dict[str, str]] = []
+    scenarios: list[dict[str, object]] = []
     work_order_number = 10000
     comment_number = 50000
     for asset_index in range(assets):
@@ -186,9 +189,11 @@ def generate_demo_data(
         start = datetime(2022, 1, 1, tzinfo=UTC) + timedelta(
             days=asset_index * 16 + rng.randint(0, 12)
         )
+        scenario_work_order_ids: list[str] = []
         for event_index in range(event_count):
             work_order_number += 1
             work_order_id = f"WO-{work_order_number}"
+            scenario_work_order_ids.append(work_order_id)
             occurred = start + timedelta(days=(0, 12, 48, 103)[event_index])
             description = issue["descriptions"][min(event_index, 2)]
             status = (
@@ -252,6 +257,15 @@ def generate_demo_data(
                     "CommentType": "dispatcher",
                 }
             )
+        scenarios.append(
+            {
+                "scenario_id": f"SCENARIO-{asset_index + 1:03d}",
+                "issue_family": issue["family"],
+                "primary_asset_key": f"{issue['entity']}:{uid}",
+                "work_order_ids": scenario_work_order_ids,
+                "expected_cause": issue["cause"],
+            }
+        )
     # Deliberate invalid and duplicate records exercise validation and job deduplication.
     work_orders.append({**work_orders[0]})
     work_orders.append(
@@ -268,6 +282,26 @@ def generate_demo_data(
     _write_csv(output_dir / "WORKORDER.csv", work_orders)
     _write_csv(output_dir / "WOENTITY.csv", entities)
     _write_csv(output_dir / "WOCOMMENT.csv", comments)
+    file_hashes = {
+        name: _sha256(output_dir / name)
+        for name in ("WORKORDER.csv", "WOENTITY.csv", "WOCOMMENT.csv")
+    }
+    manifest = {
+        "schema_version": "1.0",
+        "generator": "scripts/generate_demo_data.py",
+        "seed": seed,
+        "assets_requested": assets,
+        "scenarios": scenarios,
+        "duplicate_work_order_ids": [work_orders[0]["WorkOrderId"]],
+        "invalid_work_order_ids": ["WO-INVALID-DATE"],
+        "file_sha256": file_hashes,
+    }
+    manifest["dataset_id"] = hashlib.sha256(
+        json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()[:16]
+    (output_dir / "manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
     return {
         "work_orders": len(work_orders),
         "entities": len(entities),
@@ -280,6 +314,10 @@ def _write_csv(path: Path, rows: list[dict[str, str]]) -> None:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 if __name__ == "__main__":

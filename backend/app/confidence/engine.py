@@ -1,5 +1,6 @@
 from statistics import mean
 
+from app.data.feature_engineering import resolution_signal
 from app.incidents.models import IncidentGroup
 from app.models.domain import ConfidenceBreakdown, ConfidenceLevel
 
@@ -16,7 +17,12 @@ def score_confidence(
     incident: IncidentGroup,
     review_threshold: float = 0.72,
     weights: dict[str, float] | None = None,
+    calibration_artifact: object | None = None,
+    calibrator: object | None = None,
 ) -> ConfidenceBreakdown:
+    if calibration_artifact is not None and calibrator is not None:
+        raise ValueError("Pass only one calibration artifact")
+    calibration = calibration_artifact or calibrator
     chosen = weights or DEFAULT_WEIGHTS
     orders = incident.work_orders
     semantics = [match.semantic_similarity for match in incident.matches]
@@ -29,13 +35,14 @@ def score_confidence(
     temporal = mean(max(0, 1 - gap / 180) for gap in gaps) if gaps else 0.50
     usable_notes = sum(bool(order.cleaned_notes) for order in orders)
     evidence = min(1.0, 0.35 + usable_notes / max(2, len(orders)) * 0.65)
-    issue = mean(order.issue_family == incident.issue_family for order in orders)
-    unresolved = sum(
-        any(
-            term in " ".join(order.cleaned_notes).lower()
-            for term in ("not resolved", "issue returned", "again")
-        )
+    issue = mean(
+        float(order.metadata.get("issue_trigger_score", 1.0))
+        if order.issue_family == incident.issue_family
+        else 0.0
         for order in orders
+    )
+    unresolved = sum(
+        resolution_signal(" ".join(order.cleaned_notes)) == "UNRESOLVED" for order in orders
     )
     conflict_penalty = min(0.18, unresolved * 0.04)
     components = {
@@ -45,8 +52,19 @@ def score_confidence(
         "evidence_strength": evidence,
         "issue_agreement": issue,
     }
-    score = sum(chosen[name] * value for name, value in components.items()) - conflict_penalty
-    score = max(0.0, min(1.0, score))
+    raw_score = sum(chosen[name] * value for name, value in components.items()) - conflict_penalty
+    raw_score = max(0.0, min(1.0, raw_score))
+    if calibration is None:
+        score = raw_score
+        calibration_info = {
+            "applied": False,
+            "reason": "No calibration artifact configured",
+        }
+    else:
+        if getattr(calibration, "score_space", "raw") != "raw":
+            raise ValueError("Confidence calibration artifacts must transform raw scores")
+        score = float(calibration.transform(raw_score))
+        calibration_info = calibration.provenance()
     level = (
         ConfidenceLevel.HIGH
         if score >= 0.82
@@ -58,4 +76,6 @@ def score_confidence(
         score=score,
         level=level,
         requires_human_review=score < review_threshold,
+        raw_score=raw_score,
+        calibration=calibration_info,
     )

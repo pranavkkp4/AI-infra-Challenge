@@ -1,3 +1,13 @@
-from app.models.domain import MaintenanceInsight, PossibleCause, SupportLevel
+from app.models.domain import (
+    MaintenanceInsight,
+    PMIntervalRecommendation,
+    PossibleCause,
+    SupportLevel,
+)
 
-__all__ = ["MaintenanceInsight", "PossibleCause", "SupportLevel"]
+__all__ = [
+    "MaintenanceInsight",
+    "PMIntervalRecommendation",
+    "PossibleCause",
+    "SupportLevel",
+]

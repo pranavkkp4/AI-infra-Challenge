@@ -1,0 +1,26 @@
+{
+  "artifact_version": "1.0",
+  "artifact_id": "calibration-isotonic-v1",
+  "method": "isotonic",
+  "source": "synthetic_contract_oracle:aa52cd7c9f8d3b57",
+  "synthetic": true,
+  "score_space": "raw",
+  "dataset_id": "aa52cd7c9f8d3b57",
+  "label_source": "synthetic_contract_oracle",
+  "label_policy": "fixture-manifest-membership-and-grounding-contract-v1",
+  "split": "grouped_train",
+  "sample_count": 39,
+  "x_values": [0.51, 0.56816, 0.584154, 0.600804, 0.646373],
+  "y_values": [0.0, 0.0, 0.0, 0.6666666666666666, 0.8823529411764706],
+  "metrics": {
+    "labeled_rows": 39,
+    "total_labeled_rows": 50,
+    "brier_score": 0.219208,
+    "accuracy": 0.435897,
+    "calibrated_brier_score": 0.062343,
+    "train_rows": 39,
+    "holdout_rows": 11,
+    "holdout_raw_brier_score": 0.236138,
+    "holdout_calibrated_brier_score": 0.116214
+  }
+}

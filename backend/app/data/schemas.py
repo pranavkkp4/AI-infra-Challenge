@@ -35,6 +35,7 @@ class ValidationReport(BaseModel):
     source_rows: dict[str, int]
     accepted_rows: dict[str, int]
     rejected_rows: dict[str, int]
+    excluded_rows: dict[str, int] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
 
 

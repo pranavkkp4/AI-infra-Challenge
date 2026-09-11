@@ -26,6 +26,7 @@ class AssetRow(Base):
     asset_key: Mapped[str] = mapped_column(String, primary_key=True, autoincrement=False)
     entity_type: Mapped[str] = mapped_column(String)
     entity_uid: Mapped[str] = mapped_column(String)
+    asset_class: Mapped[str] = mapped_column(String, default="equipment")
     department: Mapped[str] = mapped_column(String)
     risk_score: Mapped[int] = mapped_column(Integer, default=0)
     risk_reasons: Mapped[list[str]] = mapped_column(JSON, default=list)
@@ -53,6 +54,7 @@ class CommentRow(Base):
     was_redacted: Mapped[bool] = mapped_column(Boolean)
     is_meaningful: Mapped[bool] = mapped_column(Boolean)
     source_type: Mapped[str] = mapped_column(String)
+    source_sequence: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class IncidentRow(Base):

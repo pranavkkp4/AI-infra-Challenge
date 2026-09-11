@@ -24,6 +24,24 @@ def score_asset_risk(asset_key: str, incidents: list[IncidentGroup]) -> AssetRis
     return score_asset_risk_evidence(asset_key, evidence)
 
 
+def score_asset_risks(
+    asset_keys: list[str], incidents: list[IncidentGroup]
+) -> dict[str, AssetRisk]:
+    evidence_by_asset: dict[str, list[tuple[str, list[tuple[datetime, str, str]]]]] = {}
+    for incident in incidents:
+        incident_orders: dict[str, list[tuple[datetime, str, str]]] = {}
+        for order in incident.work_orders:
+            evidence = (order.date, order.issue_family.value, order.priority)
+            for asset_key in order.primary_asset_keys or order.asset_keys:
+                incident_orders.setdefault(asset_key, []).append(evidence)
+        for asset_key, orders in incident_orders.items():
+            evidence_by_asset.setdefault(asset_key, []).append((incident.resolution_status, orders))
+    return {
+        asset_key: score_asset_risk_evidence(asset_key, evidence_by_asset.get(asset_key, []))
+        for asset_key in asset_keys
+    }
+
+
 def score_asset_risk_evidence(
     asset_key: str,
     evidence: list[tuple[str, list[tuple[datetime, str, str]]]],
@@ -36,7 +54,7 @@ def score_asset_risk_evidence(
     family_counts = Counter(issue_family for _, issue_family, _ in orders)
     repeated = max(family_counts.values()) if family_counts else 0
     unresolved = sum(
-        resolution in {"PERSISTENT", "UNKNOWN", "REPAIR_RECORDED"} for resolution, _ in evidence
+        resolution in {"UNRESOLVED", "UNKNOWN", "REPAIR_RECORDED"} for resolution, _ in evidence
     )
     high_priority = sum(
         priority.lower() in {"high", "urgent", "emergency"} for _, _, priority in orders
