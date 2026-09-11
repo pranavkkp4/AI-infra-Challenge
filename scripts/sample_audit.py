@@ -3,12 +3,17 @@ import argparse
 import csv
 import json
 import random
+import sys
 from pathlib import Path
+
+from sqlalchemy import select
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
 
 from app.config import get_settings
 from app.models.database import IncidentRow, InsightRow
 from app.models.repository import SqlAlchemyRepository
-from sqlalchemy import select
 
 
 def sample_rows(
@@ -16,9 +21,9 @@ def sample_rows(
 ) -> list[dict[str, object]]:
     with repository.session() as session:
         rows = session.execute(
-            select(IncidentRow, InsightRow).join(
-                InsightRow, IncidentRow.incident_id == InsightRow.incident_id
-            )
+            select(IncidentRow, InsightRow)
+            .join(InsightRow, IncidentRow.incident_id == InsightRow.incident_id)
+            .order_by(IncidentRow.incident_id)
         ).all()
     rng = random.Random(seed)
     selected = rng.sample(rows, min(sample_size, len(rows)))
@@ -27,13 +32,33 @@ def sample_rows(
             "incident_id": incident.incident_id,
             "asset_key": incident.primary_asset_key,
             "issue_family": incident.issue_family,
-            "confidence": round(incident.confidence, 6),
+            "confidence": round(
+                float(
+                    insight.payload.get("confidence_components", {}).get(
+                        "raw_score", incident.confidence
+                    )
+                ),
+                6,
+            ),
+            "reported_confidence": round(incident.confidence, 6),
             "work_order_count": incident.work_order_count,
             "supporting_work_orders": json.dumps(
                 insight.payload["supporting_work_orders"]
             ),
+            "contradicting_work_orders": json.dumps(
+                insight.payload.get("contradicting_work_orders", [])
+            ),
             "actual_correct": "",
+            "grouping_correct": "",
+            "issue_family_correct": "",
+            "citations_sufficient": "",
+            "interpretation_supported": "",
+            "recommendation_appropriate": "",
+            "failure_category": "",
             "reviewer_note": "",
+            "label_source": "",
+            "label_policy": "",
+            "dataset_id": "",
         }
         for incident, insight in selected
     ]

@@ -1,12 +1,10 @@
 from functools import lru_cache
-from pathlib import Path
 from secrets import compare_digest
 
 from fastapi import Depends, Header, HTTPException, Request
-from sqlalchemy import select
 
+from app.api.query_service import is_demo_source, latest_pipeline_run
 from app.config import Settings, get_settings
-from app.models.database import PipelineRunRow
 from app.models.repository import SqlAlchemyRepository
 
 
@@ -21,13 +19,10 @@ def require_data_access(
     repository: SqlAlchemyRepository = Depends(get_repository),
     operator_key: str | None = Header(default=None, alias="X-CivicOps-Key"),
 ) -> None:
-    if request.url.path.endswith("/health"):
+    if request.url.path == "/api/v1/health":
         return
-    with repository.session() as session:
-        latest_run = session.scalar(
-            select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
-        )
-    source_is_demo = bool(latest_run and Path(latest_run.source).name.lower() == "demo")
+    latest_run = latest_pipeline_run(repository)
+    source_is_demo = is_demo_source(latest_run.source if latest_run else None)
     if settings.demo_mode and source_is_demo:
         return
     _verify_operator_key(settings, operator_key)

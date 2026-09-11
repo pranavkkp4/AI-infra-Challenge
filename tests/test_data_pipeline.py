@@ -1,12 +1,18 @@
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
+from app.api.query_service import list_incidents
+from app.config import get_settings
 from app.data.normalizer import normalize_source
+from app.evaluation.calibration import CalibrationArtifact, save_calibration_artifact
+from app.main import _migrate_legacy_demo_source
 from app.models.database import (
     AssetRow,
     IncidentRow,
+    InsightRow,
     PipelineRunRow,
     ReviewRow,
     WorkOrderRow,
@@ -32,16 +38,33 @@ def test_normalization_deduplicates_and_validates_work_orders() -> None:
     )
 
 
+def test_demo_manifest_declares_reproducible_scenarios() -> None:
+    manifest = json.loads((DEMO_DIR / "manifest.json").read_text(encoding="utf-8"))
+
+    assert manifest["dataset_id"]
+    assert len(manifest["scenarios"]) == 72
+    assert manifest["scenarios"][0]["work_order_ids"] == [
+        "WO-10001",
+        "WO-10002",
+        "WO-10003",
+        "WO-10004",
+    ]
+
+
 def test_pipeline_persists_canonical_metrics(repository) -> None:
     with repository.session() as session:
         work_orders = session.scalar(select(func.count()).select_from(WorkOrderRow))
         assets = session.scalar(select(func.count()).select_from(AssetRow))
         incidents = session.scalar(select(func.count()).select_from(IncidentRow))
+        recurring = session.scalar(
+            select(func.count()).select_from(IncidentRow).where(IncidentRow.recurring)
+        )
         reviews = session.scalar(select(func.count()).select_from(ReviewRow))
 
     assert work_orders == 222
     assert assets == 74
     assert incidents > 0
+    assert recurring > 0
     assert reviews > 0
 
 
@@ -66,20 +89,26 @@ def test_pipeline_rerun_preserves_reviews_and_run_history(tmp_path) -> None:
         "prefer_transformer": False,
     }
     run_pipeline(**options)
+    initial_incident_count = len(list_incidents(repository))
     with repository.session() as session:
         review = session.scalars(select(ReviewRow)).first()
         review.decision = "CONFIRMED"
         review.reviewer_note = "Preserve this decision."
+        review.edited_issue_family = "pothole"
         insight_id = review.insight_id
+        incident_id = session.get(InsightRow, insight_id).incident_id
     run_pipeline(**options)
     with repository.session() as session:
         preserved = session.scalar(
             select(ReviewRow).where(ReviewRow.insight_id == insight_id)
         )
         run_count = session.scalar(select(func.count()).select_from(PipelineRunRow))
+        incident = session.get(IncidentRow, incident_id)
 
     assert preserved.decision == "CONFIRMED"
     assert preserved.reviewer_note == "Preserve this decision."
+    assert preserved.edited_issue_family == "pothole"
+    assert incident.issue_family == "pothole"
     assert run_count == 2
 
     reduced_source = tmp_path / "reduced"
@@ -107,7 +136,71 @@ def test_pipeline_rerun_preserves_reviews_and_run_history(tmp_path) -> None:
 
     assert archived.decision == "CONFIRMED"
     assert run_count == 3
+    assert len(list_incidents(repository)) != initial_incident_count
     repository.engine.dispose()
+
+
+def test_pipeline_rerun_removes_pending_reviews_cleared_by_calibration(
+    tmp_path,
+) -> None:
+    database_url = f"duckdb:///{(tmp_path / 'calibration.duckdb').as_posix()}"
+    repository = SqlAlchemyRepository(database_url)
+    options = {
+        "source_dir": DEMO_DIR,
+        "repository": repository,
+        "embedding_model": "offline",
+        "review_threshold": 0.72,
+        "prefer_transformer": False,
+    }
+    initial = run_pipeline(**options)
+    assert initial["review_queue"] > 0
+
+    artifact_path = tmp_path / "calibration.json"
+    save_calibration_artifact(
+        CalibrationArtifact(
+            artifact_id="test-all-high",
+            source="test",
+            sample_count=1,
+            x_values=[0.0],
+            y_values=[1.0],
+        ),
+        artifact_path,
+    )
+    settings = get_settings().model_copy(
+        update={
+            "database_url": database_url,
+            "demo_mode": False,
+            "calibration_enabled": True,
+            "calibration_artifact_path": artifact_path,
+        }
+    )
+    run_pipeline(**options, settings=settings)
+
+    with repository.session() as session:
+        pending = session.scalar(
+            select(func.count())
+            .select_from(ReviewRow)
+            .where(ReviewRow.decision == "PENDING")
+        )
+
+    assert pending == 0
+    repository.engine.dispose()
+
+
+def test_legacy_bundled_demo_source_is_migrated(repository) -> None:
+    with repository.session() as session:
+        latest = session.scalar(
+            select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
+        )
+        latest.source = str(DEMO_DIR)
+
+    _migrate_legacy_demo_source(repository, DEMO_DIR)
+
+    with repository.session() as session:
+        latest = session.scalar(
+            select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
+        )
+        assert latest.source.startswith("demo:")
 
 
 def test_pipeline_replacement_rolls_back_on_write_failure(

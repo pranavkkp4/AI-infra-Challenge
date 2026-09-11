@@ -1,4 +1,6 @@
+import asyncio
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
@@ -7,10 +9,18 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.alp.engine import generate_insight, load_rules
+from app.alp.intervals import infer_pm_interval
 from app.confidence.engine import score_confidence
-from app.confidence.risk import score_asset_risk
+from app.confidence.risk import score_asset_risks
+from app.config import Settings, get_settings
+from app.data.feature_engineering import engineer_temporal_features
 from app.data.normalizer import normalize_source
-from app.data.validators import build_asset_key
+from app.data.validators import build_asset_key, classify_asset
+from app.evaluation.calibration import (
+    CalibrationArtifact,
+    default_demo_calibration_path,
+    load_calibration_artifact,
+)
 from app.incidents.grouping import group_incidents
 from app.models.database import (
     AssetRow,
@@ -26,6 +36,8 @@ from app.models.database import (
 )
 from app.models.repository import DATABASE_WRITE_LOCK, SqlAlchemyRepository
 from app.rag.grounding import enforce_grounding
+from app.rag.prompts import SYSTEM_INSTRUCTIONS, build_evidence_prompt
+from app.rag.providers import DeterministicProvider, LLMProvider, create_provider
 from app.retrieval.candidates import generate_candidates
 
 
@@ -35,39 +47,71 @@ def run_pipeline(
     embedding_model: str,
     review_threshold: float,
     prefer_transformer: bool = False,
+    provider: LLMProvider | None = None,
+    settings: Settings | None = None,
 ) -> dict[str, object]:
+    selected_settings = settings or get_settings()
     started_at = datetime.now(UTC).replace(tzinfo=None)
-    dataset = normalize_source(source_dir)
+    calibration = _load_configured_calibration(selected_settings, source_dir)
+    dataset = normalize_source(source_dir, prefer_semantic_triggers=prefer_transformer)
     rules = load_rules()
+    analysis_orders = [
+        order for order in dataset.work_orders if order.metadata.get("analysis_eligible")
+    ]
     matches, index = generate_candidates(
-        dataset.work_orders,
+        analysis_orders,
         embedding_model,
         weights=rules["grouping"]["weights"],
         prefer_transformer=prefer_transformer,
     )
     incidents = group_incidents(
-        dataset.work_orders,
+        analysis_orders,
         matches,
         threshold=rules["grouping"]["threshold"],
         episode_max_span_days=rules["grouping"]["episode_max_span_days"],
     )
     confidences = {
         incident.incident_id: score_confidence(
-            incident, review_threshold, rules["confidence"]["weights"]
+            incident,
+            review_threshold,
+            rules["confidence"]["weights"],
+            calibration_artifact=calibration,
         )
         for incident in incidents
     }
-    insights = {
-        incident.incident_id: generate_insight(incident, confidences[incident.incident_id], rules)
-        for incident in incidents
-    }
+    configured_provider = provider
+    if configured_provider is None and selected_settings.llm_provider.lower() != "deterministic":
+        configured_provider = create_provider(selected_settings)
+    insights = {}
     for incident in incidents:
+        confidence = confidences[incident.incident_id]
+
+        def fallback(current_incident=incident, current_confidence=confidence):
+            return generate_insight(current_incident, current_confidence, rules)
+
+        selected_provider = configured_provider
+        if selected_provider is None or (
+            isinstance(selected_provider, DeterministicProvider)
+            and selected_provider.fallback is None
+        ):
+            selected_provider = create_provider(selected_settings, deterministic_fallback=fallback)
+        evidence_prompt = build_evidence_prompt(incident)
+        insight = _run_provider(selected_provider, SYSTEM_INSTRUCTIONS, evidence_prompt)
+        insight = _complete_insight(
+            insight,
+            incident,
+            confidence,
+            calibration,
+            index.backend,
+            len(matches),
+        )
         enforce_grounding(
-            insights[incident.incident_id],
+            insight,
             {order.work_order_id for order in incident.work_orders},
         )
+        insights[incident.incident_id] = insight
     asset_keys = sorted({asset for order in dataset.work_orders for asset in order.asset_keys})
-    risks = {asset: score_asset_risk(asset, incidents) for asset in asset_keys}
+    risks = score_asset_risks(asset_keys, incidents)
     with DATABASE_WRITE_LOCK:
         _persist(
             repository, dataset, incidents, confidences, insights, risks, started_at, source_dir
@@ -75,14 +119,101 @@ def run_pipeline(
     return {
         "work_orders": len(dataset.work_orders),
         "assets": len(asset_keys),
+        "analysis_eligible_work_orders": len(analysis_orders),
         "incidents": len(incidents),
         "recurring_incidents": sum(incident.recurring for incident in incidents),
         "review_queue": sum(
             confidence.requires_human_review for confidence in confidences.values()
         ),
         "embedding_backend": index.backend,
+        "provider": configured_provider.provider_name
+        if configured_provider is not None
+        else selected_settings.llm_provider.lower(),
+        "calibration": calibration.provenance()
+        if calibration
+        else {"applied": False, "reason": "No calibration artifact configured"},
         "validation": dataset.report.model_dump(),
     }
+
+
+def _load_configured_calibration(
+    settings: Settings, source_dir: Path
+) -> CalibrationArtifact | None:
+    path = settings.calibration_artifact_path
+    bundled_demo = Path(__file__).resolve().parents[2] / "data" / "demo"
+    is_bundled_demo = source_dir.resolve() == bundled_demo.resolve()
+    if path is None and settings.demo_mode and is_bundled_demo:
+        path = default_demo_calibration_path()
+    if path is None:
+        if settings.calibration_enabled:
+            raise ValueError("Calibration is enabled but no artifact path is configured")
+        return None
+    if not path.exists():
+        if is_bundled_demo:
+            raise ValueError(f"Bundled demo calibration artifact is missing: {path}")
+        if settings.calibration_enabled:
+            raise ValueError(f"Calibration artifact was not found: {path}")
+        return None
+    return load_calibration_artifact(path)
+
+
+def _run_provider(provider: LLMProvider, system: str, evidence: str):
+    coroutine = provider.synthesize(system, evidence)
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coroutine)
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        return executor.submit(asyncio.run, coroutine).result()
+
+
+def _complete_insight(
+    insight,
+    incident,
+    confidence,
+    calibration,
+    retrieval_backend: str,
+    candidate_count: int,
+):
+    if insight.incident_id != incident.incident_id:
+        raise ValueError("Provider insight incident_id does not match retrieved incident")
+    if insight.asset_key != incident.primary_asset_key:
+        raise ValueError("Provider insight asset_key does not match retrieved incident")
+    evidence_ids = [order.work_order_id for order in incident.work_orders]
+    interval = infer_pm_interval(incident)
+    cause_evidence = evidence_ids if insight.possible_cause.support_level.value != "UNKNOWN" else []
+    field_evidence = {
+        "summary": evidence_ids,
+        "observations": evidence_ids,
+        "interpretation": evidence_ids,
+        "possible_cause": cause_evidence,
+        "recommended_action": evidence_ids,
+        "pm_interval_recommendation": interval.supporting_work_orders,
+    }
+    for field, cited_ids in insight.evidence_by_field.items():
+        safe_ids = [work_order_id for work_order_id in cited_ids if work_order_id in evidence_ids]
+        if safe_ids:
+            field_evidence[field] = safe_ids
+    provenance = {
+        **insight.provenance,
+        "retrieval_backend": retrieval_backend,
+        "candidate_count": candidate_count,
+        "calibration": confidence.calibration,
+        "calibration_artifact_configured": calibration is not None,
+    }
+    completed = insight.model_copy(
+        update={
+            "confidence": confidence.score,
+            "confidence_level": confidence.level,
+            "requires_human_review": confidence.requires_human_review,
+            "confidence_components": confidence,
+            "pm_interval_recommendation": interval,
+            "temporal_features": engineer_temporal_features(incident.work_orders),
+            "evidence_by_field": field_evidence,
+            "provenance": provenance,
+        }
+    )
+    return type(insight).model_validate(completed)
 
 
 def _persist(
@@ -144,6 +275,7 @@ def _write_assets(session, work_orders, risks) -> None:
                 asset_key=asset,
                 entity_type=entity_type,
                 entity_uid=entity_uid,
+                asset_class=classify_asset(entity_type),
                 department=Counter(departments[asset]).most_common(1)[0][0],
                 risk_score=risk.score,
                 risk_reasons=risk.reasons,
@@ -213,7 +345,11 @@ def _write_reviews(session, incidents, confidences, insights, existing_reviews) 
         insight = insights[incident.incident_id]
         active_insight_ids.add(insight.insight_id)
         previous = existing_reviews.get(insight.insight_id)
-        if previous or confidence.requires_human_review:
+        if previous and previous["edited_issue_family"]:
+            session.get(IncidentRow, incident.incident_id).issue_family = previous[
+                "edited_issue_family"
+            ]
+        if (previous and previous["decision"] != "PENDING") or confidence.requires_human_review:
             session.add(
                 ReviewRow(
                     review_id=previous["review_id"]
@@ -235,7 +371,7 @@ def _write_reviews(session, incidents, confidences, insights, existing_reviews) 
 def _pipeline_run(dataset, started_at, source_dir) -> PipelineRunRow:
     return PipelineRunRow(
         run_id=f"RUN-{uuid4().hex[:10].upper()}",
-        source=str(source_dir),
+        source=_source_identity(dataset, source_dir),
         status="COMPLETED",
         validation_counts={
             "accepted": sum(dataset.report.accepted_rows.values()),
@@ -244,6 +380,22 @@ def _pipeline_run(dataset, started_at, source_dir) -> PipelineRunRow:
         started_at=started_at,
         completed_at=datetime.now(UTC).replace(tzinfo=None),
     )
+
+
+def _source_identity(dataset, source_dir) -> str:
+    source_rows = dataset.report.source_rows
+    if source_rows == {
+        "WORKORDER.csv": 37_778,
+        "WOENTITY.csv": 867_448,
+        "WOCOMMENT.csv": 33_572,
+    }:
+        return f"starter:{source_dir}"
+    if any(order.metadata.get("source") == "cityworks_csv" for order in dataset.work_orders):
+        return f"cityworks:{source_dir}"
+    bundled_demo = Path(__file__).resolve().parents[2] / "data" / "demo"
+    if source_dir.resolve() == bundled_demo.resolve():
+        return f"demo:{source_dir}"
+    return str(source_dir)
 
 
 def _load_existing_reviews(repository: SqlAlchemyRepository) -> dict[str, dict[str, object]]:

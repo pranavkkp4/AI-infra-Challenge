@@ -1,12 +1,17 @@
+import sys
 from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 from app.api.dependencies import get_repository
 from app.main import app
 from app.models.repository import SqlAlchemyRepository
 from app.pipeline import run_pipeline
-from fastapi.testclient import TestClient
 
 
 @pytest.fixture(scope="session")
@@ -15,7 +20,7 @@ def repository(
 ) -> Iterator[SqlAlchemyRepository]:
     database_path = tmp_path_factory.mktemp("database") / "test.duckdb"
     repository = SqlAlchemyRepository(f"duckdb:///{database_path.as_posix()}")
-    data_dir = Path(__file__).resolve().parents[1] / "data" / "demo"
+    data_dir = PROJECT_ROOT / "data" / "demo"
     run_pipeline(
         data_dir,
         repository,

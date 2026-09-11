@@ -1,9 +1,12 @@
 from collections import Counter, defaultdict
-from pathlib import Path
+from functools import lru_cache
 
-from sqlalchemy import select
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
+from app.alp.review import apply_review_override
 from app.confidence.risk import score_asset_risk_evidence
+from app.data.validators import FALLBACK_RELATIONSHIP_TYPES, PRIMARY_RELATIONSHIP_TYPES
 from app.models.database import (
     AssetRow,
     CommentRow,
@@ -20,42 +23,51 @@ from app.models.repository import SqlAlchemyRepository
 
 def dashboard_payload(repository: SqlAlchemyRepository) -> dict[str, object]:
     with repository.session() as session:
-        orders = session.scalars(select(WorkOrderRow)).all()
-        assets = session.scalars(select(AssetRow)).all()
-        incidents = session.scalars(select(IncidentRow)).all()
-        insights = session.scalars(select(InsightRow)).all()
-        latest_run = session.scalar(
-            select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
-        )
-        pending = session.scalars(
-            select(ReviewRow)
-            .join(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
-            .where(ReviewRow.decision == "PENDING")
-        ).all()
-        rejected_insights = set(
-            session.scalars(
-                select(ReviewRow.insight_id).where(ReviewRow.decision == "REJECTED")
-            ).all()
-        )
-        incidents = _active_incidents(session, incidents)
-        asset_payloads = _active_asset_payloads(session, assets, incidents)
-        recurring = [incident for incident in incidents if incident.recurring]
-        mean_repeat_days = _mean_repeat_days(session, recurring)
+        return dashboard_snapshot(session)
+
+
+def dashboard_snapshot(session: Session) -> dict[str, object]:
+    orders = session.scalars(select(WorkOrderRow)).all()
+    assets = session.scalars(select(AssetRow)).all()
+    incidents = session.scalars(select(IncidentRow)).all()
+    insights = session.scalars(select(InsightRow)).all()
+    latest_run = session.scalar(
+        select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
+    )
+    pending = session.scalars(
+        select(ReviewRow)
+        .join(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
+        .where(ReviewRow.decision == "PENDING")
+    ).all()
+    rejected_insights = set(
+        session.scalars(select(ReviewRow.insight_id).where(ReviewRow.decision == "REJECTED")).all()
+    )
+    incidents = _active_incidents(session, incidents)
+    asset_payloads = _active_asset_payloads(session, assets, incidents)
+    recurring = [incident for incident in incidents if incident.recurring]
+    mean_repeat_days = _mean_repeat_days(session, recurring)
     insights = [item for item in insights if item.insight_id not in rejected_insights]
     average_confidence = sum(item.confidence for item in incidents) / max(1, len(incidents))
+    interval_counts = _pm_interval_counts(insights)
     return {
         "dataset_label": dataset_label(latest_run.source if latest_run else None),
         "metrics": {
             "total_work_orders": len(orders),
             "unique_assets": len(assets),
             "recurring_incidents": len(recurring),
-            "high_risk_assets": sum(asset["risk_score"] >= 65 for asset in asset_payloads),
+            "high_risk_assets": sum(
+                asset["asset_class"] == "equipment" and asset["risk_score"] >= 65
+                for asset in asset_payloads
+            ),
             "human_review_count": len(pending),
             "average_confidence": round(average_confidence, 3),
             "repeat_incident_rate": round(len(recurring) / max(1, len(incidents)), 3),
             "issue_resolution_rate": _resolution_rate(incidents),
             "mean_time_between_repeats": mean_repeat_days,
+            "pm_interval_recommendations": interval_counts["recommended"],
+            "pm_interval_abstentions": interval_counts["insufficient_evidence"],
         },
+        "calibration": _calibration_summary(insights),
         "incidents_over_time": _incidents_over_time(incidents),
         "issue_distribution": _issue_distribution(incidents),
         "high_risk_assets": _high_risk_assets(asset_payloads),
@@ -66,20 +78,36 @@ def dashboard_payload(repository: SqlAlchemyRepository) -> dict[str, object]:
 
 
 def list_incidents(repository: SqlAlchemyRepository) -> list[dict[str, object]]:
+    return _cached_incidents(repository, _pipeline_generation(repository))
+
+
+@lru_cache(maxsize=4)
+def _cached_incidents(
+    repository: SqlAlchemyRepository, _generation: str | None
+) -> list[dict[str, object]]:
     with repository.session() as session:
-        rows = session.scalars(select(IncidentRow).order_by(IncidentRow.last_seen.desc())).all()
+        rows = session.scalars(
+            select(IncidentRow).order_by(IncidentRow.last_seen.desc(), IncidentRow.incident_id)
+        ).all()
         rows = _active_incidents(session, rows)
         assets = _active_asset_payload_map(session, rows)
     return [_incident_dict(row, assets) for row in rows]
 
 
 def list_assets(repository: SqlAlchemyRepository) -> list[dict[str, object]]:
+    return _cached_assets(repository, _pipeline_generation(repository))
+
+
+@lru_cache(maxsize=4)
+def _cached_assets(
+    repository: SqlAlchemyRepository, _generation: str | None
+) -> list[dict[str, object]]:
     with repository.session() as session:
         assets = session.scalars(select(AssetRow)).all()
         incidents = session.scalars(select(IncidentRow)).all()
         incidents = _active_incidents(session, incidents)
         rows = _active_asset_payloads(session, assets, incidents)
-    return sorted(rows, key=lambda row: row["risk_score"], reverse=True)
+    return sorted(rows, key=lambda row: (-row["risk_score"], row["asset_key"]))
 
 
 def incident_detail(repository: SqlAlchemyRepository, incident_id: str) -> dict[str, object] | None:
@@ -95,11 +123,18 @@ def incident_detail(repository: SqlAlchemyRepository, incident_id: str) -> dict[
             .order_by(IncidentWorkOrderRow.sequence)
         ).all()
         work_orders = [_work_order_detail(session, link) for link in links]
-        active_incidents = _active_incidents(session, session.scalars(select(IncidentRow)).all())
+        active_incidents = _active_incidents(
+            session,
+            session.scalars(
+                select(IncidentRow).where(
+                    IncidentRow.primary_asset_key == incident.primary_asset_key
+                )
+            ).all(),
+        )
         assets = _active_asset_payload_map(session, active_incidents, {incident.primary_asset_key})
     return {
         "incident": _incident_dict(incident, assets),
-        "insight": _reviewed_insight(insight.payload, review),
+        "insight": _reviewed_insight(insight.payload, review, incident.recurring),
         "work_orders": work_orders,
     }
 
@@ -122,13 +157,26 @@ def asset_detail(repository: SqlAlchemyRepository, asset_key: str) -> dict[str, 
             .where(IncidentWorkOrderRow.work_order_id.in_(order_ids))
             .distinct()
         ).all()
-        active_incidents = _active_incidents(session, session.scalars(select(IncidentRow)).all())
+        active_incidents = _active_incidents(
+            session,
+            session.scalars(
+                select(IncidentRow).where(IncidentRow.incident_id.in_(incident_ids))
+            ).all(),
+        )
         incident_id_set = set(incident_ids)
         incidents = sorted(
             (incident for incident in active_incidents if incident.incident_id in incident_id_set),
             key=lambda incident: incident.first_seen,
         )
         active_incident_ids = [incident.incident_id for incident in incidents]
+        incident_links = session.scalars(
+            select(IncidentWorkOrderRow).where(IncidentWorkOrderRow.work_order_id.in_(order_ids))
+        ).all()
+        incident_by_order = {
+            link.work_order_id: link.incident_id
+            for link in incident_links
+            if link.incident_id in set(active_incident_ids)
+        }
         insight_rows = session.scalars(
             select(InsightRow).where(InsightRow.incident_id.in_(active_incident_ids))
         ).all()
@@ -144,13 +192,18 @@ def asset_detail(repository: SqlAlchemyRepository, asset_key: str) -> dict[str, 
         asset_payloads = _active_asset_payload_map(session, active_incidents, relevant_asset_keys)
         asset_payload = asset_payloads[asset_key]
     review_by_insight = {row.insight_id: row for row in reviews}
+    incident_by_id = {row.incident_id: row for row in incidents}
     insight_by_incident = {
-        row.incident_id: _reviewed_insight(row.payload, review_by_insight.get(row.insight_id))
+        row.incident_id: _reviewed_insight(
+            row.payload,
+            review_by_insight.get(row.insight_id),
+            incident_by_id[row.incident_id].recurring,
+        )
         for row in insight_rows
     }
     return {
         "asset": list_assets_for_row(asset_payload, orders, incidents),
-        "timeline": [_timeline_order(order, incidents) for order in orders],
+        "timeline": [_timeline_order(order, incident_by_order, incident_by_id) for order in orders],
         "incidents": [
             {
                 **_incident_dict(incident, asset_payloads),
@@ -161,16 +214,47 @@ def asset_detail(repository: SqlAlchemyRepository, asset_key: str) -> dict[str, 
     }
 
 
-def review_queue(repository: SqlAlchemyRepository) -> list[dict[str, object]]:
+def review_page(
+    repository: SqlAlchemyRepository,
+    limit: int,
+    offset: int,
+    decision: str | None = None,
+    insight_id: str | None = None,
+) -> tuple[list[dict[str, object]], int]:
     with repository.session() as session:
+        query = _review_query(decision, insight_id)
+        total = session.scalar(select(func.count()).select_from(query.subquery())) or 0
         rows = session.execute(
-            select(ReviewRow, InsightRow, IncidentRow)
-            .join(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
-            .join(IncidentRow, InsightRow.incident_id == IncidentRow.incident_id)
-            .order_by(IncidentRow.confidence)
+            query.order_by(IncidentRow.confidence, ReviewRow.review_id).offset(offset).limit(limit)
         ).all()
-        active_incidents = _active_incidents(session, session.scalars(select(IncidentRow)).all())
-        assets = _active_asset_payload_map(session, active_incidents)
+        assets = _review_asset_payloads(session, rows)
+    return _review_payloads(rows, assets), total
+
+
+def _review_query(decision: str | None, insight_id: str | None):
+    query = (
+        select(ReviewRow, InsightRow, IncidentRow)
+        .join(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
+        .join(IncidentRow, InsightRow.incident_id == IncidentRow.incident_id)
+    )
+    if decision:
+        query = query.where(ReviewRow.decision == decision)
+    if insight_id:
+        query = query.where(ReviewRow.insight_id == insight_id)
+    return query
+
+
+def _review_asset_payloads(session, rows) -> dict[str, dict[str, object]]:
+    asset_keys = {incident.primary_asset_key for _, _, incident in rows}
+    if not asset_keys:
+        return {}
+    related = session.scalars(
+        select(IncidentRow).where(IncidentRow.primary_asset_key.in_(asset_keys))
+    ).all()
+    return _active_asset_payload_map(session, _active_incidents(session, related), asset_keys)
+
+
+def _review_payloads(rows, assets) -> list[dict[str, object]]:
     return [
         {
             "review_id": review.review_id,
@@ -179,7 +263,7 @@ def review_queue(repository: SqlAlchemyRepository) -> list[dict[str, object]]:
             "edited_issue_family": review.edited_issue_family,
             "edited_recommendation": review.edited_recommendation,
             "incident": _incident_dict(incident, assets),
-            "insight": insight.payload,
+            "insight": _reviewed_insight(insight.payload, review, incident.recurring),
         }
         for review, insight, incident in rows
     ]
@@ -240,9 +324,14 @@ def _primary_orders_by_incident(session, incidents):
         primary_keys = {
             link.asset_key
             for link in links
-            if link.relationship_type.lower() in {"primary", "asset", "subject"}
+            if link.relationship_type.lower() in PRIMARY_RELATIONSHIP_TYPES
         }
-        orders_by_incident[incident_id].append((order, primary_keys or all_keys))
+        fallback_keys = {
+            link.asset_key
+            for link in links
+            if link.relationship_type.lower() in FALLBACK_RELATIONSHIP_TYPES
+        }
+        orders_by_incident[incident_id].append((order, primary_keys or fallback_keys or all_keys))
     return orders_by_incident
 
 
@@ -265,6 +354,7 @@ def _active_asset_payload(asset, evidence):
         "asset_key": asset.asset_key,
         "entity_type": asset.entity_type,
         "entity_uid": asset.entity_uid,
+        "asset_class": asset.asset_class,
         "department": asset.department,
         "risk_score": risk.score,
         "risk_reasons": risk.reasons,
@@ -274,7 +364,9 @@ def _active_asset_payload(asset, evidence):
 def _work_order_detail(session, link: IncidentWorkOrderRow) -> dict[str, object]:
     order = session.get(WorkOrderRow, link.work_order_id)
     comments = session.scalars(
-        select(CommentRow).where(CommentRow.work_order_id == link.work_order_id)
+        select(CommentRow)
+        .where(CommentRow.work_order_id == link.work_order_id)
+        .order_by(CommentRow.source_sequence, CommentRow.comment_id)
     ).all()
     assets = session.scalars(
         select(WorkOrderAssetRow.asset_key).where(
@@ -289,6 +381,7 @@ def _work_order_detail(session, link: IncidentWorkOrderRow) -> dict[str, object]
         "status": order.status,
         "priority": order.priority,
         "issue_family": order.issue_family,
+        "site": order.metadata_json.get("site", ""),
         "asset_keys": assets,
         "comments": [
             {
@@ -304,22 +397,48 @@ def _work_order_detail(session, link: IncidentWorkOrderRow) -> dict[str, object]
 
 
 def dataset_label(source: str | None) -> str:
-    return (
-        "Synthetic Demo Dataset"
-        if source and Path(source).name.lower() == "demo"
-        else "Operational Dataset"
+    if source and source.startswith("starter:"):
+        return "Official Cityworks Starter Dataset"
+    if source and source.startswith("cityworks:"):
+        return "Cityworks Operational Dataset"
+    if is_demo_source(source):
+        return "Synthetic Demo Dataset"
+    return "Operational Dataset"
+
+
+def is_demo_source(source: str | None) -> bool:
+    return bool(source and source.startswith("demo:"))
+
+
+def clear_query_caches() -> None:
+    _cached_incidents.cache_clear()
+    _cached_assets.cache_clear()
+
+
+def latest_pipeline_run(repository: SqlAlchemyRepository) -> PipelineRunRow | None:
+    with repository.session() as session:
+        return session.scalar(
+            select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
+        )
+
+
+def _pipeline_generation(repository: SqlAlchemyRepository) -> str | None:
+    latest_run = latest_pipeline_run(repository)
+    return latest_run.run_id if latest_run else None
+
+
+def _reviewed_insight(
+    payload: dict[str, object], review: ReviewRow | None, recurring: bool
+) -> dict[str, object]:
+    if review is None:
+        return payload.copy()
+    return apply_review_override(
+        payload,
+        recurring,
+        review.decision,
+        review.edited_issue_family,
+        review.edited_recommendation,
     )
-
-
-def _reviewed_insight(payload: dict[str, object], review: ReviewRow | None) -> dict[str, object]:
-    result = payload.copy()
-    if review:
-        result["review_decision"] = review.decision
-        if review.edited_issue_family:
-            result["issue_family"] = review.edited_issue_family
-        if review.edited_recommendation:
-            result["recommended_action"] = review.edited_recommendation
-    return result
 
 
 def _incident_dict(
@@ -358,16 +477,9 @@ def list_assets_for_row(asset, orders, incidents) -> dict[str, object]:
     }
 
 
-def _timeline_order(order, incidents) -> dict[str, object]:
-    incident = next(
-        (
-            item
-            for item in incidents
-            if item.issue_family == order.issue_family
-            and item.first_seen <= order.occurred_at <= item.last_seen
-        ),
-        None,
-    )
+def _timeline_order(order, incident_by_order, incident_by_id) -> dict[str, object]:
+    incident_id = incident_by_order.get(order.work_order_id)
+    incident = incident_by_id.get(incident_id) if incident_id else None
     return {
         "work_order_id": order.work_order_id,
         "date": order.occurred_at.isoformat(),
@@ -421,8 +533,18 @@ def _issue_distribution(incidents) -> list[dict[str, object]]:
 
 
 def _high_risk_assets(assets) -> list[dict[str, object]]:
-    ranked = sorted(assets, key=lambda item: item["risk_score"], reverse=True)[:8]
-    return [{"asset_key": item["asset_key"], "risk_score": item["risk_score"]} for item in ranked]
+    equipment = [
+        item for item in assets if item["asset_class"] == "equipment" and item["risk_score"] >= 65
+    ]
+    ranked = sorted(equipment, key=lambda item: item["risk_score"], reverse=True)[:8]
+    return [
+        {
+            "asset_key": item["asset_key"],
+            "asset_class": item["asset_class"],
+            "risk_score": item["risk_score"],
+        }
+        for item in ranked
+    ]
 
 
 def _recurrence_trends(incidents) -> list[dict[str, object]]:
@@ -463,3 +585,26 @@ def _patterns(recurring, insights) -> list[dict[str, object]]:
             }
         )
     return patterns
+
+
+def _pm_interval_counts(insights) -> dict[str, int]:
+    counts = {"recommended": 0, "insufficient_evidence": 0}
+    for insight in insights:
+        interval = insight.payload.get("pm_interval_recommendation", {})
+        status = interval.get("status") if isinstance(interval, dict) else None
+        if status == "RECOMMENDED":
+            counts["recommended"] += 1
+        else:
+            counts["insufficient_evidence"] += 1
+    return counts
+
+
+def _calibration_summary(insights) -> dict[str, object]:
+    for insight in insights:
+        components = insight.payload.get("confidence_components", {})
+        if not isinstance(components, dict):
+            continue
+        calibration = components.get("calibration")
+        if isinstance(calibration, dict) and calibration.get("applied"):
+            return calibration
+    return {"applied": False, "reason": "No calibration artifact was applied."}

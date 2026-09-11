@@ -14,5 +14,13 @@ def mine_candidate_phrases(texts: list[str], limit: int = 30) -> list[dict[str, 
         return []
     scores = matrix.mean(axis=0).A1
     phrases = vectorizer.get_feature_names_out()
-    ranked = sorted(zip(phrases, scores, strict=True), key=lambda item: item[1], reverse=True)
+    ranked = sorted(
+        (
+            (phrase, score)
+            for phrase, score in zip(phrases, scores, strict=True)
+            if "redacted" not in phrase and not all(part.isdigit() for part in phrase.split())
+        ),
+        key=lambda item: item[1],
+        reverse=True,
+    )
     return [{"phrase": phrase, "score": round(float(score), 4)} for phrase, score in ranked[:limit]]

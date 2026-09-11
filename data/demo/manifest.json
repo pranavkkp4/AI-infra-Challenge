@@ -1,0 +1,818 @@
+{
+  "schema_version": "1.0",
+  "generator": "scripts/generate_demo_data.py",
+  "seed": 42,
+  "assets_requested": 72,
+  "scenarios": [
+    {
+      "scenario_id": "SCENARIO-001",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0001",
+      "work_order_ids": [
+        "WO-10001",
+        "WO-10002",
+        "WO-10003",
+        "WO-10004"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-002",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0002",
+      "work_order_ids": [
+        "WO-10005",
+        "WO-10006",
+        "WO-10007",
+        "WO-10008"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-003",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0003",
+      "work_order_ids": [
+        "WO-10009",
+        "WO-10010",
+        "WO-10011",
+        "WO-10012"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-004",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0004",
+      "work_order_ids": [
+        "WO-10013",
+        "WO-10014",
+        "WO-10015",
+        "WO-10016"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-005",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0005",
+      "work_order_ids": [
+        "WO-10017",
+        "WO-10018",
+        "WO-10019",
+        "WO-10020"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-006",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0006",
+      "work_order_ids": [
+        "WO-10021",
+        "WO-10022",
+        "WO-10023",
+        "WO-10024"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-007",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0007",
+      "work_order_ids": [
+        "WO-10025",
+        "WO-10026",
+        "WO-10027",
+        "WO-10028"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-008",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0008",
+      "work_order_ids": [
+        "WO-10029",
+        "WO-10030",
+        "WO-10031",
+        "WO-10032"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-009",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0009",
+      "work_order_ids": [
+        "WO-10033",
+        "WO-10034",
+        "WO-10035",
+        "WO-10036"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-010",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0010",
+      "work_order_ids": [
+        "WO-10037",
+        "WO-10038",
+        "WO-10039",
+        "WO-10040"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-011",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0011",
+      "work_order_ids": [
+        "WO-10041",
+        "WO-10042",
+        "WO-10043",
+        "WO-10044"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-012",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0012",
+      "work_order_ids": [
+        "WO-10045",
+        "WO-10046",
+        "WO-10047",
+        "WO-10048"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-013",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0013",
+      "work_order_ids": [
+        "WO-10049",
+        "WO-10050",
+        "WO-10051",
+        "WO-10052"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-014",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0014",
+      "work_order_ids": [
+        "WO-10053",
+        "WO-10054",
+        "WO-10055",
+        "WO-10056"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-015",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0015",
+      "work_order_ids": [
+        "WO-10057",
+        "WO-10058",
+        "WO-10059",
+        "WO-10060"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-016",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0016",
+      "work_order_ids": [
+        "WO-10061",
+        "WO-10062",
+        "WO-10063",
+        "WO-10064"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-017",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0017",
+      "work_order_ids": [
+        "WO-10065",
+        "WO-10066",
+        "WO-10067",
+        "WO-10068"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-018",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0018",
+      "work_order_ids": [
+        "WO-10069",
+        "WO-10070",
+        "WO-10071",
+        "WO-10072"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-019",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0019",
+      "work_order_ids": [
+        "WO-10073",
+        "WO-10074",
+        "WO-10075",
+        "WO-10076"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-020",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0020",
+      "work_order_ids": [
+        "WO-10077",
+        "WO-10078",
+        "WO-10079",
+        "WO-10080"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-021",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0021",
+      "work_order_ids": [
+        "WO-10081",
+        "WO-10082",
+        "WO-10083",
+        "WO-10084"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-022",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0022",
+      "work_order_ids": [
+        "WO-10085",
+        "WO-10086",
+        "WO-10087",
+        "WO-10088"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-023",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0023",
+      "work_order_ids": [
+        "WO-10089",
+        "WO-10090",
+        "WO-10091",
+        "WO-10092"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-024",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0024",
+      "work_order_ids": [
+        "WO-10093",
+        "WO-10094",
+        "WO-10095",
+        "WO-10096"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-025",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0001",
+      "work_order_ids": [
+        "WO-10097",
+        "WO-10098",
+        "WO-10099",
+        "WO-10100"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-026",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0002",
+      "work_order_ids": [
+        "WO-10101",
+        "WO-10102",
+        "WO-10103",
+        "WO-10104"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-027",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0003",
+      "work_order_ids": [
+        "WO-10105",
+        "WO-10106",
+        "WO-10107",
+        "WO-10108"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-028",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0004",
+      "work_order_ids": [
+        "WO-10109",
+        "WO-10110",
+        "WO-10111",
+        "WO-10112"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-029",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0005",
+      "work_order_ids": [
+        "WO-10113",
+        "WO-10114",
+        "WO-10115",
+        "WO-10116"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-030",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0006",
+      "work_order_ids": [
+        "WO-10117",
+        "WO-10118",
+        "WO-10119",
+        "WO-10120"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-031",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0007",
+      "work_order_ids": [
+        "WO-10121",
+        "WO-10122",
+        "WO-10123",
+        "WO-10124"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-032",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0008",
+      "work_order_ids": [
+        "WO-10125",
+        "WO-10126",
+        "WO-10127",
+        "WO-10128"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-033",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0009",
+      "work_order_ids": [
+        "WO-10129",
+        "WO-10130",
+        "WO-10131",
+        "WO-10132"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-034",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0010",
+      "work_order_ids": [
+        "WO-10133",
+        "WO-10134",
+        "WO-10135",
+        "WO-10136"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-035",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0011",
+      "work_order_ids": [
+        "WO-10137",
+        "WO-10138",
+        "WO-10139",
+        "WO-10140"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-036",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0012",
+      "work_order_ids": [
+        "WO-10141",
+        "WO-10142",
+        "WO-10143",
+        "WO-10144"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-037",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0013",
+      "work_order_ids": [
+        "WO-10145",
+        "WO-10146",
+        "WO-10147",
+        "WO-10148"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-038",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0014",
+      "work_order_ids": [
+        "WO-10149",
+        "WO-10150",
+        "WO-10151",
+        "WO-10152"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-039",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0015",
+      "work_order_ids": [
+        "WO-10153",
+        "WO-10154",
+        "WO-10155",
+        "WO-10156"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-040",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0016",
+      "work_order_ids": [
+        "WO-10157",
+        "WO-10158",
+        "WO-10159",
+        "WO-10160"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-041",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0017",
+      "work_order_ids": [
+        "WO-10161",
+        "WO-10162",
+        "WO-10163",
+        "WO-10164"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-042",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0018",
+      "work_order_ids": [
+        "WO-10165",
+        "WO-10166",
+        "WO-10167",
+        "WO-10168"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-043",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0019",
+      "work_order_ids": [
+        "WO-10169",
+        "WO-10170",
+        "WO-10171",
+        "WO-10172"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-044",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0020",
+      "work_order_ids": [
+        "WO-10173",
+        "WO-10174",
+        "WO-10175",
+        "WO-10176"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-045",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0021",
+      "work_order_ids": [
+        "WO-10177",
+        "WO-10178",
+        "WO-10179",
+        "WO-10180"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-046",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0022",
+      "work_order_ids": [
+        "WO-10181",
+        "WO-10182"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-047",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0023",
+      "work_order_ids": [
+        "WO-10183",
+        "WO-10184"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-048",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0024",
+      "work_order_ids": [
+        "WO-10185",
+        "WO-10186"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-049",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0001",
+      "work_order_ids": [
+        "WO-10187",
+        "WO-10188"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-050",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0002",
+      "work_order_ids": [
+        "WO-10189",
+        "WO-10190"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-051",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0003",
+      "work_order_ids": [
+        "WO-10191",
+        "WO-10192"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-052",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0004",
+      "work_order_ids": [
+        "WO-10193",
+        "WO-10194"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-053",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0005",
+      "work_order_ids": [
+        "WO-10195",
+        "WO-10196"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-054",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0006",
+      "work_order_ids": [
+        "WO-10197",
+        "WO-10198"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-055",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0007",
+      "work_order_ids": [
+        "WO-10199",
+        "WO-10200"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-056",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0008",
+      "work_order_ids": [
+        "WO-10201",
+        "WO-10202"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-057",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0009",
+      "work_order_ids": [
+        "WO-10203",
+        "WO-10204"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-058",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0010",
+      "work_order_ids": [
+        "WO-10205",
+        "WO-10206"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-059",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0011",
+      "work_order_ids": [
+        "WO-10207",
+        "WO-10208"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-060",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0012",
+      "work_order_ids": [
+        "WO-10209",
+        "WO-10210"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-061",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0013",
+      "work_order_ids": [
+        "WO-10211"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-062",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0014",
+      "work_order_ids": [
+        "WO-10212"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-063",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0015",
+      "work_order_ids": [
+        "WO-10213"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    },
+    {
+      "scenario_id": "SCENARIO-064",
+      "issue_family": "low_pressure",
+      "primary_asset_key": "VALVE:0016",
+      "work_order_ids": [
+        "WO-10214"
+      ],
+      "expected_cause": "Technician observed a corroded valve stem contributing to restricted flow."
+    },
+    {
+      "scenario_id": "SCENARIO-065",
+      "issue_family": "water_leak",
+      "primary_asset_key": "HYDRANT:0017",
+      "work_order_ids": [
+        "WO-10215"
+      ],
+      "expected_cause": "Technician confirmed a failed flange gasket at the hydrant connection."
+    },
+    {
+      "scenario_id": "SCENARIO-066",
+      "issue_family": "main_break",
+      "primary_asset_key": "WATER_MAIN:0018",
+      "work_order_ids": [
+        "WO-10216"
+      ],
+      "expected_cause": "Longitudinal main break was documented by the excavation crew."
+    },
+    {
+      "scenario_id": "SCENARIO-067",
+      "issue_family": "sewer_backup",
+      "primary_asset_key": "SEWER_MAIN:0019",
+      "work_order_ids": [
+        "WO-10217"
+      ],
+      "expected_cause": "Camera inspection documented root intrusion at joint 14."
+    },
+    {
+      "scenario_id": "SCENARIO-068",
+      "issue_family": "pothole",
+      "primary_asset_key": "ROAD_SEGMENT:0020",
+      "work_order_ids": [
+        "WO-10218"
+      ],
+      "expected_cause": "Crew documented water infiltration beneath the failed patch."
+    },
+    {
+      "scenario_id": "SCENARIO-069",
+      "issue_family": "pavement_damage",
+      "primary_asset_key": "ROAD_SEGMENT:0021",
+      "work_order_ids": [
+        "WO-10219"
+      ],
+      "expected_cause": "Insufficient evidence to determine the underlying pavement cause."
+    },
+    {
+      "scenario_id": "SCENARIO-070",
+      "issue_family": "meter_failure",
+      "primary_asset_key": "METER:0022",
+      "work_order_ids": [
+        "WO-10220"
+      ],
+      "expected_cause": "Technician confirmed a failed meter register."
+    },
+    {
+      "scenario_id": "SCENARIO-071",
+      "issue_family": "hvac_failure",
+      "primary_asset_key": "AIR_HANDLER:0023",
+      "work_order_ids": [
+        "WO-10221"
+      ],
+      "expected_cause": "Technician confirmed a failed damper actuator."
+    },
+    {
+      "scenario_id": "SCENARIO-072",
+      "issue_family": "electrical_issue",
+      "primary_asset_key": "LIGHT_PANEL:0024",
+      "work_order_ids": [
+        "WO-10222"
+      ],
+      "expected_cause": "Technician documented heat damage at the lighting contactor."
+    }
+  ],
+  "duplicate_work_order_ids": [
+    "WO-10001"
+  ],
+  "invalid_work_order_ids": [
+    "WO-INVALID-DATE"
+  ],
+  "file_sha256": {
+    "WORKORDER.csv": "7058880a7302d280890ff29d675f82ed1337cee5b549fa8f67a4d0198feb4365",
+    "WOENTITY.csv": "3725faa05ba3c8d19b8f97d0dcc9970f261cba93444dc8dd8dafc2e6f1af79ac",
+    "WOCOMMENT.csv": "9370e4e7c7a7139f10161eb6e7be2fdd33ac5a55f549722a3887166c7fc0ed51"
+  },
+  "dataset_id": "aa52cd7c9f8d3b57"
+}

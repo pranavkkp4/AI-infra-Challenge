@@ -1,6 +1,10 @@
 import pytest
 from app.analytics import report
-from app.evaluation.calibration import calibration_bins, evaluate_predictions
+from app.evaluation.calibration import (
+    calibration_bins,
+    evaluate_predictions,
+    threshold_analysis,
+)
 
 
 def test_evaluation_calculates_brier_score_and_accuracy() -> None:
@@ -21,15 +25,20 @@ def test_evaluation_requires_valid_labels() -> None:
         evaluate_predictions([(0.5, 2)])
 
 
-def test_report_skips_incidents_removed_during_snapshot_replacement(
-    monkeypatch,
-) -> None:
-    monkeypatch.setattr(report, "incident_detail", lambda *_args: None)
-    incidents = [{"incident_id": "INC-REMOVED"}]
+def test_threshold_analysis_reports_precision_coverage_and_review_load() -> None:
+    rows = threshold_analysis([(0.9, 1), (0.8, 0), (0.4, 1)], thresholds=(0.8,))
 
-    assert report._finding_lines(object(), incidents) == [
-        "No findings in this section."
+    assert rows == [
+        {
+            "threshold": 0.8,
+            "auto_accept_count": 2,
+            "auto_accept_precision": 0.5,
+            "review_load": 1,
+            "coverage": 0.666667,
+        }
     ]
-    assert report._recommendation_lines(object(), incidents) == [
-        "No recommendations generated."
-    ]
+
+
+def test_report_handles_an_empty_atomic_snapshot() -> None:
+    assert report._finding_lines([]) == ["No findings in this section."]
+    assert report._recommendation_lines([]) == ["No recommendations generated."]
