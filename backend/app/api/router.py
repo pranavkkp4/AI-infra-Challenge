@@ -1,5 +1,7 @@
 import json
+import re
 from datetime import UTC, date, datetime
+from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
@@ -7,7 +9,12 @@ from sqlalchemy import func, select
 
 from app.analytics.report import maintenance_report, maintenance_report_payload
 from app.analytics.taxonomy import mine_candidate_phrases
-from app.api.dependencies import get_repository, require_data_access, require_operator_access
+from app.api.dependencies import (
+    get_repository,
+    operator_access_required,
+    require_data_access,
+    require_operator_access,
+)
 from app.api.query_service import (
     asset_detail,
     clear_query_caches,
@@ -23,10 +30,9 @@ from app.api.query_service import (
 from app.api.schemas import HealthResponse, PipelineRequest, ReviewUpdate
 from app.api.search import hybrid_search
 from app.config import Settings, get_settings
-from app.evaluation.calibration import default_demo_calibration_path, load_calibration_artifact
 from app.models.database import CommentRow, IncidentRow, InsightRow, ReviewRow
 from app.models.repository import DATABASE_WRITE_LOCK, SqlAlchemyRepository
-from app.pipeline import run_pipeline
+from app.pipeline import _load_configured_calibration, run_pipeline
 
 router = APIRouter(prefix="/api/v1", dependencies=[Depends(require_data_access)])
 
@@ -46,14 +52,15 @@ def health(
     return HealthResponse(
         status="operational",
         database="duckdb",
-        demo_mode=is_demo,
+        demo_mode=settings.demo_mode and is_demo,
         dataset_label=dataset_label(source),
         analysis_start=analysis_start,
         analysis_end=analysis_end,
         review_threshold=settings.confidence_review_threshold,
         generated_at=datetime.now(UTC),
         llm_provider=settings.llm_provider,
-        calibration=_calibration_health(settings, is_demo),
+        calibration=_calibration_health(settings, source),
+        requires_operator_key=operator_access_required(settings, is_demo),
     )
 
 
@@ -169,6 +176,8 @@ def update_review(
         row = session.scalar(select(ReviewRow).where(ReviewRow.insight_id == insight_id))
         if not row:
             raise HTTPException(404, "Review not found")
+        if row.archived:
+            raise HTTPException(409, "Archived review snapshots are read-only")
         changes = update.model_dump(exclude_unset=True)
         for field, value in changes.items():
             setattr(row, field, value)
@@ -263,18 +272,31 @@ def rerun_pipeline(
     return result
 
 
-def _calibration_health(settings: Settings, source_is_demo: bool) -> dict[str, object]:
-    path = settings.calibration_artifact_path
-    if path is None and settings.demo_mode and source_is_demo:
-        path = default_demo_calibration_path()
-    if path is None:
-        return {
-            "configured": False,
-            "applied": False,
-            "reason": "No explicitly provided calibration artifact was configured.",
-        }
+def _calibration_health(settings: Settings, source: str | None) -> dict[str, object]:
+    configured = settings.calibration_artifact_path is not None
     try:
-        artifact = load_calibration_artifact(path)
+        source_dir = _source_dir_from_identity(source, settings)
+        source_is_demo = is_demo_source(source)
+        if source is not None and settings.demo_mode and not source_is_demo:
+            effective_settings = settings.model_copy(update={"demo_mode": False})
+        else:
+            effective_settings = settings
+        artifact = _load_configured_calibration(effective_settings, source_dir)
     except (OSError, ValueError) as error:
-        return {"configured": True, "applied": False, "error": str(error)}
+        return {"configured": configured, "applied": False, "error": str(error)}
+    if artifact is None:
+        return {"configured": False, "applied": False, "reason": "No calibration artifact applied."}
     return {"configured": True, **artifact.provenance()}
+
+
+def _source_dir_from_identity(source: str | None, settings: Settings) -> Path:
+    if source is None:
+        return settings.data_dir / ("demo" if settings.demo_mode else "raw")
+    if source.startswith(("demo:", "starter:", "cityworks:")):
+        parts = source.split(":", 2)
+        if len(parts) != 3:
+            raise ValueError("Pipeline source identity is not manifest-bound")
+        if source.startswith("demo:") and not re.fullmatch(r"[0-9a-f]{16}", parts[1]):
+            raise ValueError("Pipeline source identity is not manifest-bound")
+        return Path(parts[2])
+    return Path(source)

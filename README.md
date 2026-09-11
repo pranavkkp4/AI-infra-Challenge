@@ -142,6 +142,7 @@ The pipeline also accepts the starter repository path directly. Exact official f
 Every generated finding contains:
 
 - Exact supporting and contradicting `WorkOrderId` values.
+- Claim-level evidence mappings that tie each conclusion to supplied `WorkOrderId` values.
 - Measured observations distinct from rule-derived interpretation.
 - A possible cause support level: `SUPPORTED`, `LIKELY`, `POSSIBLE`, or `UNKNOWN`.
 - A versioned confidence score with component values, raw score, calibration provenance, and conflict penalty.
@@ -179,8 +180,9 @@ Copy `.env.example` to `.env` if defaults need to change. Settings use the `CIVI
 | `CIVICOPS_EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Optional semantic model |
 | `CIVICOPS_CONFIDENCE_REVIEW_THRESHOLD` | `0.72` | Review routing threshold |
 | `CIVICOPS_LLM_PROVIDER` | `deterministic` | Provider selection for structured synthesis |
-| `CIVICOPS_CALIBRATION_ENABLED` | `false` | Require an explicit calibration artifact for non-demo data; demo mode loads its checked-in artifact |
+| `CIVICOPS_CALIBRATION_ENABLED` | `false` | Enable calibration; operational data always requires an explicit artifact, while demo mode loads its checked-in artifact |
 | `CIVICOPS_CALIBRATION_ARTIFACT_PATH` | unset | Path to a labeled-audit calibration artifact |
+| `CIVICOPS_CALIBRATION_DATASET_ID` | unset | Dataset identity bound to an operational calibration artifact |
 | `CIVICOPS_OPERATOR_API_KEY` | unset | Required for operational data and API pipeline runs |
 | `VITE_API_URL` | `/api/v1` locally | Browser API base URL |
 

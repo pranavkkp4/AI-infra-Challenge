@@ -23,9 +23,13 @@ def require_data_access(
         return
     latest_run = latest_pipeline_run(repository)
     source_is_demo = is_demo_source(latest_run.source if latest_run else None)
-    if settings.demo_mode and source_is_demo:
+    if not operator_access_required(settings, source_is_demo):
         return
     _verify_operator_key(settings, operator_key)
+
+
+def operator_access_required(settings: Settings, source_is_demo: bool) -> bool:
+    return not (settings.demo_mode and source_is_demo)
 
 
 def require_operator_access(

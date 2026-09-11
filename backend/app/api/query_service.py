@@ -1,3 +1,4 @@
+import re
 from collections import Counter, defaultdict
 from functools import lru_cache
 
@@ -37,7 +38,7 @@ def dashboard_snapshot(session: Session) -> dict[str, object]:
     pending = session.scalars(
         select(ReviewRow)
         .join(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
-        .where(ReviewRow.decision == "PENDING")
+        .where(ReviewRow.decision == "PENDING", ReviewRow.archived.is_(False))
     ).all()
     rejected_insights = set(
         session.scalars(select(ReviewRow.insight_id).where(ReviewRow.decision == "REJECTED")).all()
@@ -234,8 +235,8 @@ def review_page(
 def _review_query(decision: str | None, insight_id: str | None):
     query = (
         select(ReviewRow, InsightRow, IncidentRow)
-        .join(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
-        .join(IncidentRow, InsightRow.incident_id == IncidentRow.incident_id)
+        .outerjoin(InsightRow, ReviewRow.insight_id == InsightRow.insight_id)
+        .outerjoin(IncidentRow, InsightRow.incident_id == IncidentRow.incident_id)
     )
     if decision:
         query = query.where(ReviewRow.decision == decision)
@@ -245,7 +246,7 @@ def _review_query(decision: str | None, insight_id: str | None):
 
 
 def _review_asset_payloads(session, rows) -> dict[str, dict[str, object]]:
-    asset_keys = {incident.primary_asset_key for _, _, incident in rows}
+    asset_keys = {incident.primary_asset_key for _, _, incident in rows if incident is not None}
     if not asset_keys:
         return {}
     related = session.scalars(
@@ -255,18 +256,44 @@ def _review_asset_payloads(session, rows) -> dict[str, dict[str, object]]:
 
 
 def _review_payloads(rows, assets) -> list[dict[str, object]]:
-    return [
-        {
-            "review_id": review.review_id,
-            "decision": review.decision,
-            "reviewer_note": review.reviewer_note,
-            "edited_issue_family": review.edited_issue_family,
-            "edited_recommendation": review.edited_recommendation,
-            "incident": _incident_dict(incident, assets),
-            "insight": _reviewed_insight(insight.payload, review, incident.recurring),
-        }
-        for review, insight, incident in rows
-    ]
+    payloads = []
+    for review, insight, incident in rows:
+        if review.archived or insight is None or incident is None:
+            snapshot = review.snapshot or {}
+            snapshot_incident = snapshot.get("incident")
+            snapshot_insight = snapshot.get("insight")
+            if isinstance(snapshot_incident, dict) and isinstance(snapshot_insight, dict):
+                snapshot_insight = _reviewed_insight(
+                    snapshot_insight,
+                    review,
+                    bool(snapshot_incident.get("recurring")),
+                )
+            payloads.append(
+                {
+                    "review_id": review.review_id,
+                    "decision": review.decision,
+                    "reviewer_note": review.reviewer_note,
+                    "edited_issue_family": review.edited_issue_family,
+                    "edited_recommendation": review.edited_recommendation,
+                    "archived": True,
+                    "incident": snapshot_incident,
+                    "insight": snapshot_insight,
+                }
+            )
+            continue
+        payloads.append(
+            {
+                "review_id": review.review_id,
+                "decision": review.decision,
+                "reviewer_note": review.reviewer_note,
+                "edited_issue_family": review.edited_issue_family,
+                "edited_recommendation": review.edited_recommendation,
+                "archived": False,
+                "incident": _incident_dict(incident, assets),
+                "insight": _reviewed_insight(insight.payload, review, incident.recurring),
+            }
+        )
+    return payloads
 
 
 def _rejected_incident_ids(session) -> set[str]:
@@ -407,7 +434,7 @@ def dataset_label(source: str | None) -> str:
 
 
 def is_demo_source(source: str | None) -> bool:
-    return bool(source and source.startswith("demo:"))
+    return bool(source and re.match(r"^demo:[0-9a-f]{16}:.+", source))
 
 
 def clear_query_caches() -> None:

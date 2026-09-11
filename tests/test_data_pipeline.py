@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from app.api.query_service import list_incidents
+from app.api.query_service import is_demo_source, list_incidents, review_page
 from app.config import get_settings
 from app.data.normalizer import normalize_source
 from app.evaluation.calibration import CalibrationArtifact, save_calibration_artifact
@@ -135,6 +135,11 @@ def test_pipeline_rerun_preserves_reviews_and_run_history(tmp_path) -> None:
         run_count = session.scalar(select(func.count()).select_from(PipelineRunRow))
 
     assert archived.decision == "CONFIRMED"
+    assert archived.archived is True
+    assert archived.snapshot["incident"]["incident_id"] == incident_id
+    archived_items, _ = review_page(repository, 10, 0, insight_id=insight_id)
+    assert archived_items[0]["archived"] is True
+    assert archived_items[0]["incident"]["incident_id"] == incident_id
     assert run_count == 3
     assert len(list_incidents(repository)) != initial_incident_count
     repository.engine.dispose()
@@ -160,6 +165,7 @@ def test_pipeline_rerun_removes_pending_reviews_cleared_by_calibration(
         CalibrationArtifact(
             artifact_id="test-all-high",
             source="test",
+            dataset_id="test-dataset",
             sample_count=1,
             x_values=[0.0],
             y_values=[1.0],
@@ -172,6 +178,7 @@ def test_pipeline_rerun_removes_pending_reviews_cleared_by_calibration(
             "demo_mode": False,
             "calibration_enabled": True,
             "calibration_artifact_path": artifact_path,
+            "calibration_dataset_id": "test-dataset",
         }
     )
     run_pipeline(**options, settings=settings)
@@ -201,6 +208,44 @@ def test_legacy_bundled_demo_source_is_migrated(repository) -> None:
             select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
         )
         assert latest.source.startswith("demo:")
+        assert is_demo_source(latest.source)
+        latest.source = f"demo:{DEMO_DIR}"
+
+    assert not is_demo_source(f"demo:{DEMO_DIR}")
+
+    _migrate_legacy_demo_source(repository, DEMO_DIR)
+
+    with repository.session() as session:
+        latest = session.scalar(
+            select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
+        )
+        assert latest.source.startswith(
+            f"demo:{json.loads((DEMO_DIR / 'manifest.json').read_text())['dataset_id']}:"
+        )
+
+
+def test_non_demo_source_requires_calibration_even_in_demo_settings(tmp_path) -> None:
+    repository = SqlAlchemyRepository(
+        f"duckdb:///{(tmp_path / 'uncalibrated.duckdb').as_posix()}"
+    )
+    settings = get_settings().model_copy(
+        update={
+            "demo_mode": True,
+            "calibration_artifact_path": None,
+            "calibration_enabled": False,
+        }
+    )
+
+    with pytest.raises(ValueError, match="explicit manual calibration artifact"):
+        run_pipeline(
+            tmp_path / "raw",
+            repository,
+            embedding_model="offline",
+            review_threshold=0.72,
+            prefer_transformer=False,
+            settings=settings,
+        )
+    repository.engine.dispose()
 
 
 def test_pipeline_replacement_rolls_back_on_write_failure(

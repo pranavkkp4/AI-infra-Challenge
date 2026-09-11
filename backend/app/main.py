@@ -10,7 +10,7 @@ from app.api.dependencies import get_repository
 from app.api.router import router
 from app.config import get_settings
 from app.models.database import PipelineRunRow, WorkOrderRow
-from app.pipeline import run_pipeline
+from app.pipeline import _verified_demo_manifest, run_pipeline
 
 
 @asynccontextmanager
@@ -39,14 +39,25 @@ def _migrate_legacy_demo_source(repository, demo_path: Path) -> None:
         latest = session.scalar(
             select(PipelineRunRow).order_by(PipelineRunRow.completed_at.desc()).limit(1)
         )
-        if latest is None or latest.source.startswith("demo:"):
+        if latest is None:
+            return
+        if latest.source.startswith("demo:"):
+            try:
+                legacy_path = Path(latest.source.removeprefix("demo:"))
+                if legacy_path.resolve() != demo_path.resolve():
+                    return
+                manifest = _verified_demo_manifest(demo_path)
+            except OSError:
+                return
+            latest.source = f"demo:{manifest['dataset_id']}:{demo_path}"
             return
         try:
             is_bundled_demo = Path(latest.source).resolve() == demo_path.resolve()
+            manifest = _verified_demo_manifest(demo_path) if is_bundled_demo else None
         except OSError:
             is_bundled_demo = False
         if is_bundled_demo:
-            latest.source = f"demo:{latest.source}"
+            latest.source = f"demo:{manifest['dataset_id']}:{demo_path}"
 
 
 app = FastAPI(

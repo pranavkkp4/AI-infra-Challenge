@@ -38,6 +38,7 @@ const insight: Insight = {
 const review: ReviewItem = {
   review_id: "REV-1",
   decision: "PENDING",
+  archived: false,
   reviewer_note: null,
   edited_issue_family: null,
   edited_recommendation: null,

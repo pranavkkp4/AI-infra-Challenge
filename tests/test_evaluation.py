@@ -23,6 +23,8 @@ def test_calibration_bins_preserve_all_predictions() -> None:
 def test_evaluation_requires_valid_labels() -> None:
     with pytest.raises(ValueError):
         evaluate_predictions([(0.5, 2)])
+    with pytest.raises(ValueError, match="exactly 0 or 1"):
+        evaluate_predictions([(0.5, True)])
 
 
 def test_threshold_analysis_reports_precision_coverage_and_review_load() -> None:

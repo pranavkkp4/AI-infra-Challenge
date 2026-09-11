@@ -207,6 +207,9 @@ def test_operational_provenance_cannot_bypass_data_access(client, repository) ->
         == 200
     )
     assert client.get("/api/v1/health").json()["demo_mode"] is False
+    health = client.get("/api/v1/health").json()
+    assert health["requires_operator_key"] is True
+    assert health["calibration"]["applied"] is False
 
     with repository.session() as session:
         latest_run = session.scalar(

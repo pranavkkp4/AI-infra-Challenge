@@ -191,11 +191,12 @@ export interface AssetDetail {
 export interface ReviewItem {
   review_id: string;
   decision: ReviewDecision;
+  archived: boolean;
   reviewer_note: string | null;
   edited_issue_family: string | null;
   edited_recommendation: string | null;
-  incident: IncidentSummary;
-  insight: Insight;
+  incident: IncidentSummary | null;
+  insight: Insight | null;
 }
 
 export interface SearchResult {

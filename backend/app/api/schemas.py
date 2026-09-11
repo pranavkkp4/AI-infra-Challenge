@@ -35,3 +35,4 @@ class HealthResponse(BaseModel):
     generated_at: datetime
     llm_provider: str = "deterministic"
     calibration: dict[str, object] = Field(default_factory=dict)
+    requires_operator_key: bool = False

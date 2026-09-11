@@ -102,6 +102,8 @@ class ReviewRow(Base):
     edited_recommendation: Mapped[str | None] = mapped_column(Text, nullable=True)
     reviewer_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    archived: Mapped[bool] = mapped_column(Boolean, default=False)
+    snapshot: Mapped[dict[str, object]] = mapped_column(JSON, default=dict)
 
 
 class PipelineRunRow(Base):

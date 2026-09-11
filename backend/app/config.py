@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     # Demo mode uses the bundled provisional curve; operational data requires an explicit artifact.
     calibration_enabled: bool = False
     calibration_artifact_path: Path | None = None
+    calibration_dataset_id: str | None = None
 
 
 @lru_cache

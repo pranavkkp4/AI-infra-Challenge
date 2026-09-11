@@ -1,7 +1,9 @@
 import asyncio
+import json
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
+from hashlib import sha256
 from pathlib import Path
 from uuid import uuid4
 
@@ -114,7 +116,15 @@ def run_pipeline(
     risks = score_asset_risks(asset_keys, incidents)
     with DATABASE_WRITE_LOCK:
         _persist(
-            repository, dataset, incidents, confidences, insights, risks, started_at, source_dir
+            repository,
+            dataset,
+            incidents,
+            confidences,
+            insights,
+            risks,
+            started_at,
+            source_dir,
+            selected_settings.demo_mode,
         )
     return {
         "work_orders": len(dataset.work_orders),
@@ -140,21 +150,37 @@ def _load_configured_calibration(
     settings: Settings, source_dir: Path
 ) -> CalibrationArtifact | None:
     path = settings.calibration_artifact_path
-    bundled_demo = Path(__file__).resolve().parents[2] / "data" / "demo"
-    is_bundled_demo = source_dir.resolve() == bundled_demo.resolve()
+    demo_manifest = _verified_demo_manifest(source_dir)
+    is_bundled_demo = settings.demo_mode and demo_manifest is not None
+    is_generated_demo = settings.demo_mode and _is_generated_demo_source(source_dir)
     if path is None and settings.demo_mode and is_bundled_demo:
         path = default_demo_calibration_path()
     if path is None:
-        if settings.calibration_enabled:
-            raise ValueError("Calibration is enabled but no artifact path is configured")
-        return None
+        if is_generated_demo:
+            if settings.calibration_enabled:
+                raise ValueError("Calibration is enabled but no artifact path is configured")
+            return None
+        raise ValueError("Every non-demo dataset requires an explicit manual calibration artifact")
     if not path.exists():
-        if is_bundled_demo:
-            raise ValueError(f"Bundled demo calibration artifact is missing: {path}")
-        if settings.calibration_enabled:
-            raise ValueError(f"Calibration artifact was not found: {path}")
-        return None
-    return load_calibration_artifact(path)
+        raise ValueError(f"Calibration artifact was not found: {path}")
+    artifact = load_calibration_artifact(path)
+    if is_bundled_demo:
+        expected_dataset_id = str(demo_manifest["dataset_id"])
+        if artifact.dataset_id != expected_dataset_id:
+            raise ValueError(
+                "Demo calibration artifact does not match the verified demo dataset manifest"
+            )
+    else:
+        if artifact.synthetic or artifact.label_source.startswith("synthetic_"):
+            raise ValueError(
+                "Synthetic calibration artifacts cannot be applied to operational data"
+            )
+        expected_dataset_id = settings.calibration_dataset_id
+        if not expected_dataset_id:
+            raise ValueError("Operational calibration requires CIVICOPS_CALIBRATION_DATASET_ID")
+        if artifact.dataset_id != expected_dataset_id:
+            raise ValueError("Calibration artifact dataset_id does not match configured dataset ID")
+    return artifact
 
 
 def _run_provider(provider: LLMProvider, system: str, evidence: str):
@@ -217,7 +243,15 @@ def _complete_insight(
 
 
 def _persist(
-    repository, dataset, incidents, confidences, insights, risks, started_at, source_dir
+    repository,
+    dataset,
+    incidents,
+    confidences,
+    insights,
+    risks,
+    started_at,
+    source_dir,
+    demo_mode,
 ) -> None:
     repository.create_schema()
     existing_reviews = _load_existing_reviews(repository)
@@ -240,7 +274,7 @@ def _persist(
             _write_insights(session, incidents, insights)
             session.flush()
             _write_reviews(session, incidents, confidences, insights, existing_reviews)
-            session.add(_pipeline_run(dataset, started_at, source_dir))
+            session.add(_pipeline_run(dataset, started_at, source_dir, demo_mode))
             session.flush()
         finally:
             session.close()
@@ -361,17 +395,24 @@ def _write_reviews(session, incidents, confidences, insights, existing_reviews) 
                     edited_recommendation=previous["edited_recommendation"] if previous else None,
                     reviewer_note=previous["reviewer_note"] if previous else None,
                     reviewed_at=previous["reviewed_at"] if previous else None,
+                    archived=False,
+                    snapshot={},
                 )
             )
     for insight_id, previous in existing_reviews.items():
         if insight_id not in active_insight_ids:
-            session.add(ReviewRow(insight_id=insight_id, **previous))
+            session.add(
+                ReviewRow(
+                    insight_id=insight_id,
+                    **{**previous, "archived": True},
+                )
+            )
 
 
-def _pipeline_run(dataset, started_at, source_dir) -> PipelineRunRow:
+def _pipeline_run(dataset, started_at, source_dir, demo_mode) -> PipelineRunRow:
     return PipelineRunRow(
         run_id=f"RUN-{uuid4().hex[:10].upper()}",
-        source=_source_identity(dataset, source_dir),
+        source=_source_identity(dataset, source_dir, demo_mode),
         status="COMPLETED",
         validation_counts={
             "accepted": sum(dataset.report.accepted_rows.values()),
@@ -382,35 +423,94 @@ def _pipeline_run(dataset, started_at, source_dir) -> PipelineRunRow:
     )
 
 
-def _source_identity(dataset, source_dir) -> str:
-    source_rows = dataset.report.source_rows
-    if source_rows == {
-        "WORKORDER.csv": 37_778,
-        "WOENTITY.csv": 867_448,
-        "WOCOMMENT.csv": 33_572,
-    }:
-        return f"starter:{source_dir}"
+def _source_identity(dataset, source_dir, demo_mode) -> str:
+    demo_manifest = _verified_demo_manifest(source_dir) if demo_mode else None
+    if demo_manifest is not None:
+        return f"demo:{demo_manifest['dataset_id']}:{source_dir}"
     if any(order.metadata.get("source") == "cityworks_csv" for order in dataset.work_orders):
+        starter_data = Path(__file__).resolve().parents[2] / "data" / "raw"
+        if source_dir.resolve() == starter_data.resolve():
+            return f"starter:{source_dir}"
         return f"cityworks:{source_dir}"
-    bundled_demo = Path(__file__).resolve().parents[2] / "data" / "demo"
-    if source_dir.resolve() == bundled_demo.resolve():
-        return f"demo:{source_dir}"
     return str(source_dir)
+
+
+def _verified_demo_manifest(source_dir: Path) -> dict[str, object] | None:
+    bundled_demo = Path(__file__).resolve().parents[2] / "data" / "demo"
+    if source_dir.resolve() != bundled_demo.resolve():
+        return None
+    manifest_path = source_dir / "manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        file_hashes = manifest["file_sha256"]
+        for filename in ("WORKORDER.csv", "WOENTITY.csv", "WOCOMMENT.csv"):
+            expected = file_hashes[filename]
+            actual = sha256((source_dir / filename).read_bytes()).hexdigest()
+            if actual != expected:
+                raise ValueError(f"Demo manifest hash mismatch for {filename}")
+        manifest_without_id = {key: value for key, value in manifest.items() if key != "dataset_id"}
+        expected_dataset_id = sha256(
+            json.dumps(manifest_without_id, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()[:16]
+        if manifest.get("dataset_id") != expected_dataset_id:
+            raise ValueError("Demo manifest dataset_id does not match its contents")
+    except (KeyError, OSError, TypeError, json.JSONDecodeError) as error:
+        raise ValueError(f"Bundled demo manifest is invalid: {error}") from error
+    return manifest
+
+
+def _is_generated_demo_source(source_dir: Path) -> bool:
+    try:
+        manifest = json.loads((source_dir / "manifest.json").read_text(encoding="utf-8"))
+    except (OSError, TypeError, json.JSONDecodeError):
+        return False
+    return (
+        isinstance(manifest, dict) and manifest.get("generator") == "scripts/generate_demo_data.py"
+    )
 
 
 def _load_existing_reviews(repository: SqlAlchemyRepository) -> dict[str, dict[str, object]]:
     with repository.session() as session:
         rows = session.scalars(select(ReviewRow)).all()
-    return {
-        row.insight_id: {
+        insights = {row.insight_id: row for row in session.scalars(select(InsightRow)).all()}
+        incidents = {row.incident_id: row for row in session.scalars(select(IncidentRow)).all()}
+    values = {}
+    for row in rows:
+        insight = insights.get(row.insight_id)
+        incident = incidents.get(insight.incident_id) if insight else None
+        values[row.insight_id] = {
             "review_id": row.review_id,
             "decision": row.decision,
             "edited_issue_family": row.edited_issue_family,
             "edited_recommendation": row.edited_recommendation,
             "reviewer_note": row.reviewer_note,
             "reviewed_at": row.reviewed_at,
+            "archived": row.archived,
+            "snapshot": row.snapshot or _review_snapshot(insight, incident),
         }
-        for row in rows
+    return values
+
+
+def _review_snapshot(insight: InsightRow | None, incident: IncidentRow | None) -> dict[str, object]:
+    if insight is None or incident is None:
+        return {}
+    return {
+        "incident": {
+            "incident_id": incident.incident_id,
+            "asset_key": incident.primary_asset_key,
+            "issue_family": incident.issue_family,
+            "department": incident.department,
+            "first_seen": incident.first_seen.isoformat(),
+            "last_seen": incident.last_seen.isoformat(),
+            "work_order_count": incident.work_order_count,
+            "recurring": incident.recurring,
+            "resolution_status": incident.resolution_status,
+            "confidence": round(incident.confidence, 3),
+            "confidence_level": incident.confidence_level,
+            "requires_human_review": incident.requires_human_review,
+            "risk_score": incident.risk_score,
+        },
+        "insight": insight.payload,
     }
 
 

@@ -41,6 +41,7 @@ export function Shell() {
   const location = useLocation();
   const { data: metadata } = useApi<{
     demo_mode: boolean;
+    requires_operator_key: boolean;
     dataset_label: string;
     analysis_start: string | null;
     analysis_end: string | null;
@@ -78,7 +79,7 @@ export function Shell() {
           <div><small>OPERATIONS DESK / {active?.code}</small><strong>{active?.label}</strong></div>
           <div className="topbar-actions">
             <span className={`dataset-chip ${metadata?.demo_mode ? "synthetic" : ""}`} title="Dataset provenance"><i />{metadata?.dataset_label ?? "Dataset connecting"}</span>
-            {metadata && !metadata.demo_mode && <button type="button" onClick={enterAccessKey}>Set access key</button>}
+            {metadata?.requires_operator_key && <button type="button" onClick={enterAccessKey}>Set access key</button>}
             <div className="topbar-meta"><span>ANALYSIS WINDOW</span><strong>{formatWindow(metadata)}</strong></div>
           </div>
         </header>

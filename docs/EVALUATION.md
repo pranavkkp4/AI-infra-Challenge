@@ -53,7 +53,7 @@ component labels agree with `actual_correct`, fits only on raw scores, and emits
 - `calibration.png`: observed correctness against mean confidence by non-empty decile.
 - `holdout_calibrated`: metrics after applying the fitted artifact to asset-held-out rows.
 
-Outputs are stored under `data/calibration/` and excluded from version control. The generated artifact carries score space, dataset ID, label source, label policy, and split provenance. Synthetic contract results are for software validation; manual labels remain required for operational calibration.
+Outputs are stored under `data/calibration/` and excluded from version control. The generated artifact carries score space, dataset ID, label source, label policy, and split provenance. Operational runs must set `CIVICOPS_CALIBRATION_DATASET_ID` to the exact dataset ID in the manually labeled artifact; synthetic contract results are for software validation and cannot satisfy that requirement.
 
 ## Independent Engineering Audit
 

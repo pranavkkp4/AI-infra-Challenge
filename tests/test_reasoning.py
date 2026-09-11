@@ -295,6 +295,25 @@ def test_grounding_rejects_citations_outside_retrieved_evidence() -> None:
         enforce_grounding(insight, {"WO-1"})
 
 
+def test_grounding_rejects_claims_without_field_evidence_mapping() -> None:
+    incident = group_incidents([_order("WO-1", 1, 1)], [])[0]
+    insight = generate_insight(incident, score_confidence(incident))
+    evidence_by_field = {**insight.evidence_by_field, "summary": []}
+
+    with pytest.raises(GroundingError, match="Claim field summary"):
+        enforce_grounding(
+            insight.model_copy(update={"evidence_by_field": evidence_by_field}),
+            {"WO-1"},
+        )
+
+
+def test_grounding_accepts_numeric_cityworks_work_order_ids() -> None:
+    incident = group_incidents([_order("100", 1, 1)], [])[0]
+    insight = generate_insight(incident, score_confidence(incident))
+
+    enforce_grounding(insight, {"100"})
+
+
 def test_candidate_generation_is_bounded_and_deterministic() -> None:
     orders = [
         _order(f"WO-{index:03d}", 1 + index // 27, 1 + index % 27).model_copy(

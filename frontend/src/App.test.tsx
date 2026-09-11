@@ -31,6 +31,7 @@ const health = {
   status: "operational",
   database: "duckdb",
   demo_mode: true,
+  requires_operator_key: false,
   dataset_label: "Synthetic Demo Dataset",
   analysis_start: "2022-01-01T00:00:00",
   analysis_end: "2025-02-01T00:00:00",
@@ -68,5 +69,16 @@ describe("application integration", () => {
 
     const request = fetchMock.mock.calls[0]?.[1];
     expect(new Headers(request?.headers).get("X-CivicOps-Key")).toBe("operator-secret");
+  });
+
+  it("shows the access-key control when the API requires it", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const payload = String(input).endsWith("/dashboard") ? dashboard : { ...health, requires_operator_key: true };
+      return new Response(JSON.stringify(payload), { status: 200 });
+    }));
+
+    render(<MemoryRouter><App /></MemoryRouter>);
+
+    expect(await screen.findByRole("button", { name: "Set access key" })).toBeTruthy();
   });
 });

@@ -156,10 +156,13 @@ def _prediction_pairs(
             if not isinstance(item, (tuple, list)) or len(item) != 2:
                 raise ValueError("Labeled predictions must contain (confidence, label) pairs")
             score, label = item
+            _validate_label(label)
             pairs.append((float(score), int(label)))
     else:
         if len(predictions) != len(labels):
             raise ValueError("Scores and labels must have equal length")
+        for label in labels:
+            _validate_label(label)
         pairs = [
             (float(score), int(label)) for score, label in zip(predictions, labels, strict=True)
         ]
@@ -168,6 +171,11 @@ def _prediction_pairs(
     if any(label not in {0, 1} or not 0 <= score <= 1 for score, label in pairs):
         raise ValueError("Confidence must be in [0, 1] and labels must be 0 or 1")
     return pairs
+
+
+def _validate_label(label: object) -> None:
+    if isinstance(label, bool) or label not in {0, 1}:
+        raise ValueError("Labels must be exactly 0 or 1")
 
 
 def save_calibration_artifact(artifact: CalibrationArtifact, destination: Path | str) -> None:
@@ -196,6 +204,8 @@ load_calibrator = load_calibration_artifact
 def evaluate_predictions(predictions: list[tuple[float, int]]) -> dict[str, float | int]:
     if not predictions:
         raise ValueError("At least one labeled prediction is required")
+    for _, label in predictions:
+        _validate_label(label)
     if any(label not in {0, 1} or not 0 <= confidence <= 1 for confidence, label in predictions):
         raise ValueError("Confidence must be in [0, 1] and labels must be 0 or 1")
     count = len(predictions)

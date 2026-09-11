@@ -72,6 +72,17 @@ class SqlAlchemyRepository:
                         ),
                         updates,
                     )
+        if "reviews" in tables:
+            if not _has_column(schema, "reviews", "archived"):
+                _add_column(
+                    self.engine,
+                    "ALTER TABLE reviews ADD COLUMN archived BOOLEAN DEFAULT FALSE",
+                )
+            if not _has_column(schema, "reviews", "snapshot"):
+                _add_column(
+                    self.engine,
+                    "ALTER TABLE reviews ADD COLUMN snapshot JSON DEFAULT '{}'",
+                )
 
     @contextmanager
     def session(self) -> Iterator[Session]:
@@ -88,6 +99,11 @@ class SqlAlchemyRepository:
 
 def _has_column(schema, table: str, column: str) -> bool:
     return column in {item["name"] for item in schema.get_columns(table)}
+
+
+def _add_column(engine: Engine, statement: str) -> None:
+    with engine.begin() as connection:
+        connection.execute(text(statement))
 
 
 def _source_sequence(comment_id: object, fallback: int) -> int:
